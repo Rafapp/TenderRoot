@@ -14,8 +14,6 @@ local score = 0
 local playTimer = nil
 local playTime = 30*1000 --30secs in milisec
 
-local test = nil
-
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
@@ -41,11 +39,6 @@ function initialize()
 	moveCoin()
 	coinSprite:setCollideRect(0,0,coinSprite:getSize())
 	coinSprite:add()
-
-	local testImage = gfx.image.new("images/Playdate_2")
-	test = gfx.sprite.new(testImage)
-	test:moveTo(120,120)
-	test:add()
 
 	local backgroundImage = gfx.image.new("images/background")
 	gfx.sprite.setBackgroundDrawingCallback(
