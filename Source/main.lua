@@ -5,12 +5,23 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
+local playTimer = nil
+local playTime = 30*1000 --30secs in milisec
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
 function initialize()
 
+
+	local backgroundImage = gfx.image.new("images/background")
+	gfx.sprite.setBackgroundDrawingCallback(
+		function (x,y,width,height)
+			gfx.setClipRect(x,y,width,height)
+			backgroundImage:draw(0,0)
+			gfx.clearClipRect()
+		end
+	)
 	resetTimer()
 end
 
