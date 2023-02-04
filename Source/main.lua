@@ -10,7 +10,7 @@ local function resetTimer()
 end
 
 function initialize()
-
+	gfx.drawPixel(0,0)
 	resetTimer()
 end
 
