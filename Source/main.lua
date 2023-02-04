@@ -12,7 +12,12 @@ local function resetTimer()
 end
 
 function initialize()
+	local seedImage = gfx.image.new("images/seed")
+	local seedSprite = gfx.sprite.new(seedImage)
+	seedSprite:moveTo(200,64)
+	seedSprite:add()
 
+	gfx.drawPixel(0,0)
 
 	local backgroundImage = gfx.image.new("images/background")
 	gfx.sprite.setBackgroundDrawingCallback(
@@ -22,6 +27,7 @@ function initialize()
 			gfx.clearClipRect()
 		end
 	)
+
 	resetTimer()
 end
 
