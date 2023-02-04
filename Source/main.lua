@@ -12,7 +12,10 @@ local function resetTimer()
 end
 
 function initialize()
-
+	local seedImage = gfx.image.new("images/seed")
+	local seedSprite = gfx.sprite.new(seedImage)
+	seedSprite:moveTo(200,64)
+	seedSprite:add()
 
 	local backgroundImage = gfx.image.new("images/background")
 	gfx.sprite.setBackgroundDrawingCallback(
