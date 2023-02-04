@@ -5,6 +5,8 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
+local rootLength = 0
+
 local playTimer = nil
 local playTime = 30*1000 --30secs in milisec
 local function resetTimer()
@@ -14,7 +16,7 @@ end
 function initialize()
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
-	seedSprite:moveTo(200,64)
+	seedSprite:moveTo(200,32)
 	seedSprite:add()
 
 	local backgroundImage = gfx.image.new("images/background")
@@ -58,4 +60,7 @@ function playdate.update()
 
 	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
 	gfx.sprite.update() --tells system to update every sprite on the draw list
+
+	--UI elements
+	gfx.drawText("Root Length: " .. rootLength, 10, 10)
 end
