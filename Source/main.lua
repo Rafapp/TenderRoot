@@ -18,6 +18,17 @@ initialize()
 
 --runs 30fps, can be somehow changed
 function playdate.update()
+	-- A button press
+	if playdate.buttonJustPressed(playdate.kButtonA) then
+		
+	end
+
+	-- B button press
+	if playdate.buttonJustPressed(playdate.kButtonB) then
+		
+	end
+	
+	--D-PAD button press
 	if playdate.buttonIsPressed(playdate.kButtonUp) then
 		
 	end
