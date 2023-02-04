@@ -17,6 +17,8 @@ function initialize()
 	seedSprite:moveTo(200,64)
 	seedSprite:add()
 
+	gfx.drawPixel(0,0)
+
 	local backgroundImage = gfx.image.new("images/background")
 	gfx.sprite.setBackgroundDrawingCallback(
 		function (x,y,width,height)
@@ -25,6 +27,7 @@ function initialize()
 			gfx.clearClipRect()
 		end
 	)
+
 	resetTimer()
 end
 
