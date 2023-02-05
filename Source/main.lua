@@ -4,8 +4,8 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
-
-local rootLength = 0
+local original_draw_mode = gfx.getImageDrawMode()
+local rootLength = 10
 
 local playTimer = nil
 local playTime = 30*1000 --30secs in milisec
@@ -19,8 +19,6 @@ function initialize()
 	seedSprite:moveTo(200,32)
 	seedSprite:add()
 
-	gfx.drawPixel(0,0)
-
 	local backgroundImage = gfx.image.new("images/background")
 	gfx.sprite.setBackgroundDrawingCallback(
 		function (x,y,width,height)
@@ -29,7 +27,6 @@ function initialize()
 			gfx.clearClipRect()
 		end
 	)
-
 	resetTimer()
 end
 
@@ -65,5 +62,7 @@ function playdate.update()
 	gfx.sprite.update() --tells system to update every sprite on the draw list
 
 	--UI elements
-	gfx.drawText("Root Length: " .. rootLength, 10, 10)
+	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.setImageDrawMode(original_draw_mode)
 end
