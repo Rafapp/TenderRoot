@@ -32,9 +32,6 @@ GlobalObjLocs = {};
 
 --[[ SHAHBAZ CODE BLOCK A ENDS --]]
 
-
-local rootLength = 0 
-
 -- Root drawing variables
 local moveSpeed = 1
 local rootThickness = 2 -- Even number pls
@@ -42,8 +39,9 @@ local rootY = 0
 local rootX = 0
 
 local original_draw_mode = gfx.getImageDrawMode()
+local color = gfx.getColor()
 local rootLength = 10
-
+local rootBranches = 0
 
 local playTimer = nil
 local playTime = 30 * 1000 --30secs in milisec
@@ -71,7 +69,7 @@ function PoolGen()
 		end
 		PoolLocs[i] = temp_Pool;
 	end
-	
+
 end
 
 -- Function to generate number of rocks at a radial distance from root/split origin
@@ -137,7 +135,7 @@ function Is_PlaceOcc(x, y)
 			if (GlobalObjLocs[x][i] == y) then
 				return true
 			end
-		end	
+		end
 	end
 	return false
 end
@@ -177,8 +175,8 @@ initialize()
 function playdate.update()
 	-- Sprite manipulation runs before sprite update
 	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
-	
-	
+
+
 	-- Any drawing runs after sprite update
 
 	-- A button press
@@ -204,6 +202,7 @@ function playdate.update()
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
 		drawRoot(-1,0)
+		rootBranches+=1
 	end
 	-- Snake control
 
@@ -223,12 +222,13 @@ function updateRootLength(num)
 end
 
 function drawUI()
+	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	local uiText = gfx.drawText("Root Length: " .. rootLength, 10, 0)
-
+	gfx.drawText("Root Length: " .. rootLength, 10, 0)
 	gfx.setImageDrawMode(original_draw_mode)
-	--local test = gfx.getTextSizeForMaxWidth(uiText)
-	--gfx.drawText(test, 380, 0)
+
+	gfx.setColor(gfx.kDrawModeFillWhite);
+	gfx.fillRect(10,40,110,20)
+	gfx.setColor(color);
+	gfx.drawText("Branches: " .. rootBranches, 10, 40)
 end
-
-
