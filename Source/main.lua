@@ -22,7 +22,7 @@ NumRocks = 2; -- a variable representing the number of stones to generate
 NumBatteries = 0; -- a variable representing the number of batteries to generate
 
 -- an array containing the locations of all the water pool objects
-PoolLocs = {};
+local PoolLocs = {};
 -- an array containing the locations of all the rock objects
 RockLocs = {};
 -- an array containing the locations of all the battery acid objects
@@ -58,8 +58,98 @@ end
 
 --[[ SHAHBAZ CODE BLOCK B STARTS--]]
 
+-- PoolLocs contains the following pool object features at each index:
+-- 																	  x_coord: x-coordinate for pool
+-- 																	  y_coord: y-coordinate for pool
+-- 																	  isUsed: the pool's drain status
+
 -- Function to generate number of waters at a radial distance from root/split origin
 function PoolGen()
+	-- hardcoded pools
+	
+	local temp_Pool = {}
+	temp_Pool['x_coord'] = 200
+	temp_Pool['y_coord'] = 80
+	temp_Pool ['isUsed'] = false
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
+	poolSprite:add()
+
+	--temp_Pool['x_coord'] = math.random(0, 200) + 120
+	--temp_Pool['y_coord'] = math.random(0, 40) + 80
+	--temp_Pool ['isUsed'] = false
+	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
+	PoolLocs[0] = temp_Pool
+	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
+	
+
+	temp_Pool['x_coord'] = 120
+	temp_Pool['y_coord'] = 60
+	temp_Pool ['isUsed'] = false
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
+	poolSprite:add()
+	
+	--temp_Pool['x_coord'] = math.random(0, 100) + 220
+	--temp_Pool['y_coord'] = math.random(0, 40) + 80
+	--temp_Pool ['isUsed'] = false
+	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
+	PoolLocs[1] = temp_Pool
+	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
+	
+
+	temp_Pool['x_coord'] = 280
+	temp_Pool['y_coord'] = 40
+	temp_Pool ['isUsed'] = false
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
+	poolSprite:add()
+	
+	if poolWidth == 0 then
+		poolWidth = poolSprite.width
+	end
+	if poolHeight == 0 then
+		poolHeight = poolSprite.height
+	end
+
+	--temp_Pool['x_coord'] = math.random(0, 200) + 120
+	--temp_Pool['y_coord'] = math.random(40, 60) + 80
+	--temp_Pool ['isUsed'] = false
+	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
+	PoolLocs[2] = temp_Pool
+	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
+	
+	
+	
+	for i = 0, #PoolLocs, 1 do
+		print("hello")
+		local poolImage = gfx.image.new("images/water_pocket")
+		local poolSprite = gfx.sprite.new(poolImage)
+		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
+		poolSprite:add()
+		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
+		-- TESTING: to debug pool locations
+		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
+
+		if poolWidth == 0 then
+			poolWidth = poolSprite.width
+		end
+		if poolHeight == 0 then
+			poolHeight = poolSprite.height
+		end
+	end
+
+
+	--[[ random pool generator
 	for i = 0, NumWaters, 1 do
 
 		local rand_num = math.random(180)
@@ -76,7 +166,7 @@ function PoolGen()
 		end
 		PoolLocs[i] = temp_Pool;
 	end
-
+	--]]
 end
 
 -- Function to generate number of rocks at a radial distance from root/split origin
@@ -92,7 +182,7 @@ function RockGen()
 		temp_Rock['x_coord'] = temp_x
 		temp_Rock['y_coord'] = temp_y
 		if not (Is_PlaceOcc(temp_x, temp_y)) then -- TO DO: for checking if any other object is already on that place
-			PoolLocs[i] = temp_Rock;
+			RockLocs[i] = temp_Rock;
 			-- GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
 			if (GlobalObjLocs[temp_x] == nil) then
 				GlobalObjLocs[temp_x] = temp_y
@@ -119,7 +209,7 @@ function BattGen()
 		temp_Batt['x_coord'] = temp_x
 		temp_Batt['y_coord'] = temp_y
 		if not (Is_PlaceOcc(temp_x, temp_y)) then -- TO DO: for checking if any other object is already on that place
-			PoolLocs[i] = temp_Batt;
+			BattLocs[i] = temp_Batt;
 			--GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
 			if (GlobalObjLocs[temp_x] == nil) then
 				GlobalObjLocs[temp_x] = temp_y
@@ -150,12 +240,15 @@ end
 --[[ SHAHBAZ CODE BLOCK B ENDS--]]
 
 function drawPool()
-	for i = 0, #PoolLocs do
-		print("hello")
+	--[[
+	for key, value in pairs(PoolLocs) do
 		local poolImage = gfx.image.new("images/water_pocket")
 		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(PoolLocs[i]["x_coord"],PoolLocs[i]["y_coord"])
+		poolSprite:moveTo(value.x_coord,value.y_coord)
 		poolSprite:add()
+		print ("Pool Location: " .. value.x_coord .. ", "..value.y_coord)
+		-- TESTING: to debug pool locations
+		gfx.drawText("Pool Length: " .. value.x_coord .. ", "..value.y_coord,  value.x_coord, value.y_coord - 10)
 
 		if poolWidth == 0 then
 			poolWidth = poolSprite.width
@@ -164,14 +257,39 @@ function drawPool()
 			poolHeight = poolSprite.height
 		end
 	end
+	--]]
+
+	
+	for i = 0, #PoolLocs, 1 do
+		print("hello")
+		local poolImage = gfx.image.new("images/water_pocket")
+		local poolSprite = gfx.sprite.new(poolImage)
+		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
+		poolSprite:add()
+		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
+		-- TESTING: to debug pool locations
+		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
+
+		if poolWidth == 0 then
+			poolWidth = poolSprite.width
+		end
+		if poolHeight == 0 then
+			poolHeight = poolSprite.height
+		end
+	end
+	
 end
 
 function initialize()
 	PoolGen()
 	RockGen()
 	BattGen()
-	drawPool()
+	--print ("pre draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
+	
+	--drawPool()
 
+	--print ("post draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
+	
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
 	seedSprite:moveTo(200,32)
@@ -226,6 +344,7 @@ function playdate.update()
 	end
 
 	drawUI()
+	--drawPool()
 end
 
 
