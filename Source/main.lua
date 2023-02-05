@@ -15,7 +15,7 @@ Player_Fuel = 10;
 -- The radial distance a water resource can be from player origin
 Pool_dist = 80;
 -- number of waters
-NumWaters = 3; -- a variable representing the number of pools of water to generate
+NumWaters = 6; -- a variable representing the number of pools of water to generate
 -- number of stones
 NumRocks = 2; -- a variable representing the number of stones to generate
 -- number of batteries (BONUS)
@@ -34,6 +34,9 @@ GlobalObjLocs = {};
 Pool0 = {}
 Pool1 = {}
 Pool2 = {}
+Pool3 = {}
+Pool4 = {}
+Pool5 = {}
 
 --[[ SHAHBAZ CODE BLOCK A ENDS --]]
 
@@ -52,7 +55,7 @@ local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 24
+local rootLength = 1000
 local rootBranches = 1
 local waterTablePosY = 0
 
@@ -137,13 +140,48 @@ function PoolGen()
 	Pool2['x_coord'] = math.random(0, 200) + 120
 	Pool2['y_coord'] = math.random(40, 60) + 80
 	Pool2 ['isUsed'] = false
-
+	PoolLocs[2] = Pool2
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
 	poolSprite:moveTo(Pool2.x_coord,Pool2.y_coord)
 	poolSprite:add()
+
+	Pool3['x_coord'] = math.random(0, 200) + 120
+	Pool3['y_coord'] = math.random(60, 80) + 80
+	Pool3 ['isUsed'] = false
+	PoolLocs[3] = Pool3
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(Pool3.x_coord,Pool3.y_coord)
+	poolSprite:add()
+
+	Pool4['x_coord'] = math.random(0, 100) + 220
+	Pool4['y_coord'] = math.random(60, 80) + 80
+	Pool4 ['isUsed'] = false
+	PoolLocs[4] = Pool4
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(Pool4.x_coord,Pool4.y_coord)
+	poolSprite:add()
+
+	Pool5['x_coord'] = math.random(100, 200) + 60
+	Pool5['y_coord'] = math.random(60, 80) + 80
+	Pool5 ['isUsed'] = false
+	PoolLocs[5] = Pool5
+
+	print("hello")
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(Pool5.x_coord,Pool5.y_coord)
+	poolSprite:add()
+
+
 
 	if poolWidth == 0 then
 		poolWidth = poolSprite.width
@@ -528,6 +566,63 @@ function CheckPoolCollision(x, y)
 		rootBranches += 1
 		Pool2['isUsed'] = true
 	end
+
+	--X low and high range
+	--local lowX = 280 - poolWidth
+	--local highX = 280 + poolWidth
+	local lowX = Pool3.x_coord - poolWidth
+	local highX = Pool3.x_coord + poolWidth
+	
+	--Y low and high range
+	--local lowY = 40 - poolHeight
+	--local highY = 40 + poolHeight
+	local lowY = Pool3.y_coord - poolHeight
+	local highY = Pool3.y_coord + poolHeight
+	
+	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool3['isUsed']) then
+		rootLength += 20
+		rootBranches += 1
+		Pool3['isUsed'] = true
+	end
+
+	--X low and high range
+	--local lowX = 280 - poolWidth
+	--local highX = 280 + poolWidth
+	local lowX = Pool4.x_coord - poolWidth
+	local highX = Pool4.x_coord + poolWidth
+	
+	--Y low and high range
+	--local lowY = 40 - poolHeight
+	--local highY = 40 + poolHeight
+	local lowY = Pool4.y_coord - poolHeight
+	local highY = Pool4.y_coord + poolHeight
+	
+	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool4['isUsed']) then
+		rootLength += 20
+		rootBranches += 1
+		Pool4['isUsed'] = true
+	end
+
+	--X low and high range
+	--local lowX = 280 - poolWidth
+	--local highX = 280 + poolWidth
+	local lowX = Pool5.x_coord - poolWidth
+	local highX = Pool5.x_coord + poolWidth
+	
+	--Y low and high range
+	--local lowY = 40 - poolHeight
+	--local highY = 40 + poolHeight
+	local lowY = Pool5.y_coord - poolHeight
+	local highY = Pool5.y_coord + poolHeight
+	
+	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool5['isUsed']) then
+		rootLength += 20
+		rootBranches += 1
+		Pool5['isUsed'] = true
+	end
+
+
+
 end
 
 function WaterTableCollision(y)
