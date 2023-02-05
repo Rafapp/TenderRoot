@@ -4,6 +4,15 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
+
+local rootLength = 0 
+
+-- Root drawing variables
+local moveSpeed = 1
+local rootThickness = 2 -- Even number pls
+local rootY = 0
+local rootX = 0
+
 local original_draw_mode = gfx.getImageDrawMode()
 local rootLength = 10
 
@@ -27,6 +36,8 @@ function initialize()
 			gfx.clearClipRect()
 		end
 	)
+
+	gfx.sprite.update() --tells system to update every sprite on the draw list
 	resetTimer()
 end
 
@@ -34,6 +45,12 @@ initialize()
 
 --runs 30fps, can be somehow changed
 function playdate.update()
+	-- Sprite manipulation runs before sprite update
+	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
+	
+	
+	-- Any drawing runs after sprite update
+
 	-- A button press
 	if playdate.buttonJustPressed(playdate.kButtonA) then
 		
@@ -46,23 +63,30 @@ function playdate.update()
 	
 	--D-PAD button press
 	if playdate.buttonIsPressed(playdate.kButtonUp) then
-		
+		drawRoot(0,-1)
 	end
 	if playdate.buttonIsPressed(playdate.kButtonRight) then
-		
+		drawRoot(1,0)
 	end
 	if playdate.buttonIsPressed(playdate.kButtonDown) then
-		
+		drawRoot(0,1)
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
-		
+		drawRoot(-1,0)
 	end
+	-- Snake control
 
-	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
-	gfx.sprite.update() --tells system to update every sprite on the draw list
 
 	--UI elements
-	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+  gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Root Length: " .. rootLength, 10, 0)
 	gfx.setImageDrawMode(original_draw_mode)
+end
+
+
+-- x can be -1 (left), 0 (center) and 1 (right)
+function drawRoot(x,y)
+	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX),48 - rootThickness/2 + (rootThickness*rootY),rootThickness, rootThickness)
+	rootY += y
+	rootX += x
 end
