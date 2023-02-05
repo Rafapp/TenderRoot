@@ -240,7 +240,7 @@ end
 function drawUI()
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
 	--[Old method of display Branches]
@@ -251,7 +251,7 @@ function drawUI()
 	
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Branches: " .. rootBranches, 280, 0)
+	gfx.drawText("Branches: " .. rootBranches, 290, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 end
 
