@@ -52,7 +52,7 @@ local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 24
+local rootLength = 50
 local rootBranches = 1
 local waterTablePosY = 0
 
@@ -362,7 +362,9 @@ function playdate.update()
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-		alternateBranch()
+		if(branchNumber > 0) then
+			alternateBranch()
+		end
 	end
 
 	--D-PAD button press
