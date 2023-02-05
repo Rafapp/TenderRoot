@@ -40,6 +40,9 @@ local moveSpeed = 1
 local rootThickness = 2 -- Even number pls
 local rootY = 0
 local rootX = 0
+local branchSize = 10 -- Even number pls
+local branchNumber = 0
+local branchLocs = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local rootLength = 10
@@ -151,8 +154,6 @@ function initialize()
 	RockGen()
 	BattGen()
 
-
-
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
 	seedSprite:moveTo(200,32)
@@ -183,12 +184,12 @@ function playdate.update()
 
 	-- A button press
 	if playdate.buttonJustPressed(playdate.kButtonA) then
-
+		drawBranch()
 	end
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-
+		alternateBranch()
 	end
 
 	--D-PAD button press
@@ -205,17 +206,51 @@ function playdate.update()
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
 		drawRoot(-1,0)
 	end
-	-- Snake control
 
 	drawUI()
 end
 
 
 -- x can be -1 (left), 0 (center) and 1 (right)
-function drawRoot(x,y)
-	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX),48 - rootThickness/2 + (rootThickness*rootY),rootThickness, rootThickness)
-	rootY += y
+function drawRoot(x, y)
+	gfx.setColor(gfx.kColorBlack)
+	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
 	rootX += x
+	rootY += y
+end
+
+function drawBranch()
+	drawX = (200 - branchSize/2) + (rootThickness*rootX)
+	drawY = (48 - branchSize/2) + (rootThickness*rootY)
+
+	gfx.drawRect(drawX,drawY,branchSize, branchSize)
+
+	branchLocs[branchNumber] = {}
+	branchLocs[branchNumber][drawX] = drawY
+	branchNumber += 1;
+end
+
+local buttonPressCount = 0
+function alternateBranch()
+	local selectedBranch = buttonPressCount % branchNumber
+	local index = 0
+	for k, v in pairs(branchLocs) do
+		for k2, v2 in pairs(v) do
+			if(selectedBranch == index) then
+				gfx.fillRect(k2+1,v2+1,branchSize-2,branchSize-2)
+				rootX -= k2
+				rootY -= v2
+			else
+				gfx.setColor(gfx.kColorWhite)
+				gfx.fillRect(k2+1,v2+1,branchSize-2,branchSize-2)
+				gfx.setColor(gfx.kColorBlack)
+			end
+			gfx.setColor(gfx.kColorBlack)
+			index += 1
+		end
+		
+	end
+	buttonPressCount += 1
 end
 
 function updateRootLength(num)
