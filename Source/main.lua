@@ -225,8 +225,10 @@ end
 function drawUI()
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	local uiText = gfx.drawText("Root Length: " .. rootLength, 10, 0)
+
 	gfx.setImageDrawMode(original_draw_mode)
 	--local test = gfx.getTextSizeForMaxWidth(uiText)
 	--gfx.drawText(test, 380, 0)
 end
+
 
