@@ -40,6 +40,10 @@ local moveSpeed = 1
 local rootThickness = 2 -- Even number pls
 local rootY = 0
 local rootX = 0
+local branchSize = 10 -- Even number pls
+local branchNumber = 0
+local branchLocs = {}
+local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
@@ -62,7 +66,7 @@ end
 -- Function to generate number of waters at a radial distance from root/split origin
 function PoolGen()
 	-- hardcoded pools
-	
+
 	local temp_Pool = {}
 	--temp_Pool['x_coord'] = 200
 	--temp_Pool['y_coord'] = 80
@@ -71,7 +75,7 @@ function PoolGen()
 	temp_Pool['x_coord'] = math.random(0, 200) + 120
 	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
-	
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
@@ -82,7 +86,7 @@ function PoolGen()
 	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[0] = temp_Pool
 	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
-	
+
 
 	--temp_Pool['x_coord'] = 120
 	--temp_Pool['y_coord'] = 60
@@ -91,18 +95,18 @@ function PoolGen()
 	temp_Pool['x_coord'] = math.random(0, 100) + 220
 	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
-	
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
-	
+
 	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[1] = temp_Pool
 	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
-	
+
 
 	--temp_Pool['x_coord'] = 280
 	--temp_Pool['y_coord'] = 40
@@ -110,14 +114,14 @@ function PoolGen()
 	temp_Pool['x_coord'] = math.random(0, 200) + 120
 	temp_Pool['y_coord'] = math.random(40, 60) + 80
 	temp_Pool ['isUsed'] = false
-	
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
-	
+
 	if poolWidth == 0 then
 		poolWidth = poolSprite.width
 	end
@@ -128,9 +132,9 @@ function PoolGen()
 	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[2] = temp_Pool
 	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
-	
-	
+
+
+
 	for i = 0, #PoolLocs, 1 do
 		print("hello")
 		local poolImage = gfx.image.new("images/water_pocket")
@@ -260,7 +264,7 @@ function drawPool()
 	end
 	--]]
 
-	
+
 	for i = 0, #PoolLocs, 1 do
 		print("hello")
 		local poolImage = gfx.image.new("images/water_pocket")
@@ -278,7 +282,7 @@ function drawPool()
 			poolHeight = poolSprite.height
 		end
 	end
-	
+
 end
 
 function initialize()
@@ -286,11 +290,11 @@ function initialize()
 	RockGen()
 	BattGen()
 	--print ("pre draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
+
 	--drawPool()
 
 	--print ("post draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
+
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
 	seedSprite:moveTo(200,32)
@@ -321,12 +325,12 @@ function playdate.update()
 
 	-- A button press
 	if playdate.buttonJustPressed(playdate.kButtonA) then
-
+		drawBranch()
 	end
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-
+		alternateBranch()
 	end
 
 	--D-PAD button press
@@ -352,10 +356,60 @@ end
 
 
 -- x can be -1 (left), 0 (center) and 1 (right)
-function drawRoot(x,y)
-	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX),48 - rootThickness/2 + (rootThickness*rootY),rootThickness, rootThickness)
-	rootY += y
+function drawRoot(x, y)
+	gfx.setColor(gfx.kColorBlack)
+	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
 	rootX += x
+	rootY += y
+end
+
+function drawBranch()
+	drawX = (200 - branchSize/2) + (rootThickness*rootX)
+	drawY = (48 - branchSize/2) + (rootThickness*rootY)
+
+	gfx.drawRect(drawX,drawY,branchSize, branchSize)
+
+	branchLocs[branchNumber] = {}
+	branchLocs[branchNumber][drawX] = drawY
+
+	branchLocsLocalScale[branchNumber] = {}
+	branchLocsLocalScale[branchNumber][rootX] = rootY
+
+	branchNumber += 1;
+end
+
+local buttonPressCount = 0 -- Number of times B is pressed.
+function alternateBranch()
+	-- Mod loop through branches
+	local branchSelected = buttonPressCount % branchNumber
+	buttonPressCount += 1
+
+	-- Get local X and Y coordinates of current branch
+	local tempX = 0
+	local tempY = 0
+	for k, v in pairs(branchLocsLocalScale) do
+		for x, y in pairs(v) do
+			if(k == branchSelected) then
+				tempX = x
+				tempY = y
+			end
+		end
+	end
+
+	-- Visually loop through branches
+	for k, v in pairs(branchLocs) do
+        for x, y in pairs(v) do
+			if(k == branchSelected) then
+				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+				rootX = tempX
+				rootY = tempY
+			else
+				gfx.setColor(gfx.kColorWhite)
+                gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+                gfx.setColor(gfx.kColorBlack)
+			end
+		end
+	end
 end
 
 function updateRootLength(num)
@@ -365,7 +419,7 @@ end
 function drawUI()
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
 	--[Old method of display Branches]
@@ -373,10 +427,10 @@ function drawUI()
 	--gfx.fillRect(10,40,110,20)
 	--gfx.setColor(color)
 	--gfx.drawText("Branches: " .. rootBranches, 10, 40)
-	
+
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Branches: " .. rootBranches, 280, 0)
+	gfx.drawText("Branches: " .. rootBranches, 290, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 end
 
