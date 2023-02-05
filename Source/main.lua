@@ -22,7 +22,7 @@ NumRocks = 2; -- a variable representing the number of stones to generate
 NumBatteries = 0; -- a variable representing the number of batteries to generate
 
 -- an array containing the locations of all the water pool objects
-local PoolLocs = {};
+PoolLocs = {};
 -- an array containing the locations of all the rock objects
 RockLocs = {};
 -- an array containing the locations of all the battery acid objects
@@ -47,8 +47,8 @@ local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 10
-local rootBranches = 0
+local rootLength = 24
+local rootBranches = 1
 local waterTablePosY = 0
 
 local playTimer = nil
@@ -489,4 +489,21 @@ function WaterTableCollision(y)
 
 		playdate.stop()
 	end
+end
+
+--not in use
+function ResetVariables()
+	rootLength = 24
+	rootBranches = 1
+	initialize()
+
+	rootX = 0
+	rootY = 0
+	branchLocs = {}
+	branchLocsLocalScale = {}
+
+	PoolLocs = {};
+	RockLocs = {};
+	BattLocs = {};
+	GlobalObjLocs = {};
 end
