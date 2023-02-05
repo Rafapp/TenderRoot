@@ -13,7 +13,7 @@ ROOT_ORIGIN_Y = 48;
 Player_Fuel = 10;
 
 -- The radial distance a water resource can be from player origin
-Pool_dist = 8;
+Pool_dist = 80;
 -- number of waters
 NumWaters = 3; -- a variable representing the number of pools of water to generate
 -- number of stones
@@ -60,8 +60,8 @@ function PoolGen()
 		local temp_x = math.cos(rand_num) * Pool_dist
 		local temp_y = math.sin(rand_num) * Pool_dist
 		local temp_Pool = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Pool['x_coord'] = temp_x
-		temp_Pool['y_coord'] = temp_y
+		temp_Pool['x_coord'] = temp_x + 200
+		temp_Pool['y_coord'] = temp_y + 48
 		if (GlobalObjLocs[temp_x] == nil) then
 			GlobalObjLocs[temp_x] = temp_y
 		else
@@ -142,14 +142,21 @@ end
 
 --[[ SHAHBAZ CODE BLOCK B ENDS--]]
 
-
+function drawPool()
+	for i = 0, #PoolLocs do
+		print("hello")
+		local poolImage = gfx.image.new("images/water_pocket")
+		local poolSprite = gfx.sprite.new(poolImage)
+		poolSprite:moveTo(PoolLocs[i]["x_coord"],PoolLocs[i]["y_coord"])
+		poolSprite:add()
+	end
+end
 
 function initialize()
 	PoolGen()
 	RockGen()
 	BattGen()
-
-
+	drawPool()
 
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
