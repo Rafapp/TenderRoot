@@ -72,7 +72,7 @@ function PoolGen()
 		end
 		PoolLocs[i] = temp_Pool;
 	end
-	
+
 end
 
 -- Function to generate number of rocks at a radial distance from root/split origin
@@ -138,7 +138,7 @@ function Is_PlaceOcc(x, y)
 			if (GlobalObjLocs[x][i] == y) then
 				return true
 			end
-		end	
+		end
 	end
 	return false
 end
@@ -192,8 +192,8 @@ initialize()
 function playdate.update()
 	-- Sprite manipulation runs before sprite update
 	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
-	
-	
+
+
 	-- Any drawing runs after sprite update
 
 	-- A button press
@@ -239,15 +239,22 @@ function updateRootLength(num)
 end
 
 function drawUI()
+	--gfx.setColor(gfx.kColorBlack);
+	--gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	--gfx.setColor(gfx.kColorBlack);
+	gfx.setColor(gfx.kColorBlack)
 	gfx.drawText("Root Length: " .. rootLength, 10, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
-	gfx.setColor(gfx.kDrawModeFillWhite);
+	--gfx.setImageDrawMode(gfx.kDrawModeBlackTransparent);
+	gfx.setColor(gfx.kColorClear)
 	gfx.fillRect(10,40,110,20)
-	gfx.setColor(color);
+	--gfx.setColor(gfx.kColorBlack);
 	gfx.drawText("Branches: " .. rootBranches, 10, 40)
+	gfx.setColor(color)
 end
 
 function CheckPoolCollision(x, y)
