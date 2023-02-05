@@ -32,6 +32,9 @@ GlobalObjLocs = {};
 
 --[[ SHAHBAZ CODE BLOCK A ENDS --]]
 
+local poolWidth = 0
+local poolHeight = 0;
+
 -- Root drawing variables
 local moveSpeed = 1
 local rootThickness = 2 -- Even number pls
@@ -149,6 +152,13 @@ function drawPool()
 		local poolSprite = gfx.sprite.new(poolImage)
 		poolSprite:moveTo(PoolLocs[i]["x_coord"],PoolLocs[i]["y_coord"])
 		poolSprite:add()
+
+		if poolWidth == 0 then
+			poolWidth = poolSprite.width
+		end
+		if poolHeight == 0 then
+			poolHeight = poolSprite.height
+		end
 	end
 end
 
@@ -245,4 +255,24 @@ function drawUI()
 	--gfx.setColor(gfx.kColorBlack);
 	gfx.drawText("Branches: " .. rootBranches, 10, 40)
 	gfx.setColor(color)
+end
+
+function CheckPoolCollision(x, y)
+	for i = 1, #PoolLocs, 1 do
+		local pool = PoolLocs[i]
+		--X low and high range
+		local lowX = pool.x_coord - poolWidth
+		local highX = pool.x_coord + poolWidth
+		--Y low and high range
+		local lowY = pool.y_coord - poolHeight
+		local highY = pool.y_coord + poolHeight
+
+		if x >= lowX and x <= highX then
+			--x is inside area
+		end
+
+		if y >= lowY and y <= highY then
+			--y is inside area
+		end
+	end
 end
