@@ -74,7 +74,7 @@ local rootY = 0
 
 local branchSize = 10 -- Even number pls
 local branchNumber = 0
-local rootLength = 1000
+local rootLength = 24
 local rootBranches = 1
 
 local branchLocs = {}
