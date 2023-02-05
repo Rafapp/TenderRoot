@@ -215,7 +215,6 @@ function playdate.update()
 	end
 	if playdate.buttonIsPressed(playdate.kButtonDown) then
 		drawRoot(0,1)
-		rootLength+=1
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
 		drawRoot(-1,0)
@@ -239,22 +238,21 @@ function updateRootLength(num)
 end
 
 function drawUI()
-	--gfx.setColor(gfx.kColorBlack);
-	--gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	--gfx.setColor(gfx.kColorBlack);
-	gfx.setColor(gfx.kColorBlack)
 	gfx.drawText("Root Length: " .. rootLength, 10, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
-	--gfx.setImageDrawMode(gfx.kDrawModeBlackTransparent);
-	gfx.setColor(gfx.kColorClear)
-	gfx.fillRect(10,40,110,20)
-	--gfx.setColor(gfx.kColorBlack);
-	gfx.drawText("Branches: " .. rootBranches, 10, 40)
-	gfx.setColor(color)
+	--[Old method of display Branches]
+	--gfx.setColor(gfx.kColorClear)
+	--gfx.fillRect(10,40,110,20)
+	--gfx.setColor(color)
+	--gfx.drawText("Branches: " .. rootBranches, 10, 40)
+	
+	gfx.fillRect(280,0,130,20)
+	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	gfx.drawText("Branches: " .. rootBranches, 280, 0)
+	gfx.setImageDrawMode(original_draw_mode)
 end
 
 function CheckPoolCollision(x, y)
@@ -267,12 +265,12 @@ function CheckPoolCollision(x, y)
 		local lowY = pool.y_coord - poolHeight
 		local highY = pool.y_coord + poolHeight
 
-		if x >= lowX and x <= highX then
-			--x is inside area
-		end
+		if (x+200 >= lowX and x+200 <= highX) and (y+48 >= lowY and y+48 <= highY) then
+			--toggle pool bool (if true then false, vice versa)
 
-		if y >= lowY and y <= highY then
-			--y is inside area
+			--update root length
+			rootLength += 20
+			rootBranches += 1
 		end
 	end
 end
