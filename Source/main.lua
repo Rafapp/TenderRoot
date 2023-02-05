@@ -5,35 +5,19 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
---[[ SHAHBAZ CODE BLOCK A STARTS--]]
--- The origin of the root; player start location
-ROOT_ORIGIN_X = 200;
-ROOT_ORIGIN_Y = 48;
--- The distance a player can travel (root fuel); steps a player can take to water
-Player_Fuel = 10;
+PoolLocs = {}
+RockLocs = {}
+BattLocs = {}
 
--- The radial distance a water resource can be from player origin
-Pool_dist = 80;
--- number of waters
-NumWaters = 3; -- a variable representing the number of pools of water to generate
--- number of stones
-NumRocks = 2; -- a variable representing the number of stones to generate
--- number of batteries (BONUS)
-NumBatteries = 0; -- a variable representing the number of batteries to generate
+GlobalObjLocs = {}
 
--- an array containing the locations of all the water pool objects
-local PoolLocs = {};
--- an array containing the locations of all the rock objects
-RockLocs = {};
--- an array containing the locations of all the battery acid objects
-BattLocs = {};
--- a table containing x-y pairs for each object already placed on screen
-GlobalObjLocs = {};
+-- Rock dimensions
+local rockWidth = 0
+local rockHeight = 0
 
---[[ SHAHBAZ CODE BLOCK A ENDS --]]
-
+-- Pool dimensions
 local poolWidth = 0
-local poolHeight = 0;
+local poolHeight = 0
 
 -- Root drawing variables
 local moveSpeed = 1
@@ -47,8 +31,8 @@ local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 10
-local rootBranches = 0
+local rootLength = 1000
+local rootBranches = 1
 local waterTablePosY = 0
 
 local playTimer = nil
@@ -57,70 +41,28 @@ local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
---[[ SHAHBAZ CODE BLOCK B STARTS--]]
+-- Place rock at x, y
+local poolCount = 0
+function PoolGen(x, y)
+	tempPool = {x = x, y = y, isUsed = false}
+	drawPool(tempPool.x, tempPool.y)
+	PoolLocs[poolCount] = tempPool
+	poolCount += 1
+end
 
--- PoolLocs contains the following pool object features at each index:
--- 																	  x_coord: x-coordinate for pool
--- 																	  y_coord: y-coordinate for pool
--- 																	  isUsed: the pool's drain status
+-- ROCK GEN: Place rock at x, y
+local rockCount = 0
+function RockGen(x,y)
+	tempRock = {x = x, y = y}
+	drawRock(tempRock.x, tempRock.y)
+	RockLocs[rockCount] = tempRock
+	rockCount += 1
+end
 
--- Function to generate number of waters at a radial distance from root/split origin
-function PoolGen()
-	-- hardcoded pools
-
-	local temp_Pool = {}
-	--temp_Pool['x_coord'] = 200
-	--temp_Pool['y_coord'] = 80
-	--temp_Pool ['isUsed'] = false
-
-	temp_Pool['x_coord'] = math.random(0, 200) + 120
-	temp_Pool['y_coord'] = math.random(0, 40) + 80
-	temp_Pool ['isUsed'] = false
-
-
-	print("hello")
+function drawPool(x,y)
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
-	poolSprite:add()
-
-	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	PoolLocs[0] = temp_Pool
-	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
-
-
-	--temp_Pool['x_coord'] = 120
-	--temp_Pool['y_coord'] = 60
-	--temp_Pool ['isUsed'] = false
-
-	temp_Pool['x_coord'] = math.random(0, 100) + 220
-	temp_Pool['y_coord'] = math.random(0, 40) + 80
-	temp_Pool ['isUsed'] = false
-
-
-	print("hello")
-	local poolImage = gfx.image.new("images/water_pocket")
-	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
-	poolSprite:add()
-
-	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	PoolLocs[1] = temp_Pool
-	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
-
-
-	--temp_Pool['x_coord'] = 280
-	--temp_Pool['y_coord'] = 40
-	--temp_Pool ['isUsed'] = false
-	temp_Pool['x_coord'] = math.random(0, 200) + 120
-	temp_Pool['y_coord'] = math.random(40, 60) + 80
-	temp_Pool ['isUsed'] = false
-
-
-	print("hello")
-	local poolImage = gfx.image.new("images/water_pocket")
-	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
+	poolSprite:moveTo(x,y)
 	poolSprite:add()
 
 	if poolWidth == 0 then
@@ -129,172 +71,29 @@ function PoolGen()
 	if poolHeight == 0 then
 		poolHeight = poolSprite.height
 	end
-
-	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	PoolLocs[2] = temp_Pool
-	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-
-
-
-	for i = 0, #PoolLocs, 1 do
-		print("hello")
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
-
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
-	end
-
-
-	--[[ random pool generator
-	for i = 0, NumWaters, 1 do
-
-		local rand_num = math.random(180)
-		rand_num = rand_num * 0.0174533
-		local temp_x = math.cos(rand_num) * Pool_dist
-		local temp_y = math.sin(rand_num) * Pool_dist
-		local temp_Pool = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Pool['x_coord'] = temp_x + 200
-		temp_Pool['y_coord'] = temp_y + 48
-		if (GlobalObjLocs[temp_x] == nil) then
-			GlobalObjLocs[temp_x] = temp_y
-		else
-			GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-		end
-		PoolLocs[i] = temp_Pool;
-	end
-	--]]
 end
 
--- Function to generate number of rocks at a radial distance from root/split origin
-
-function RockGen()
-	for i = 0, NumRocks, 1 do
-
-		local rand_num = math.random(180)
-		rand_num = rand_num * 0.0174533
-		local temp_x = math.cos(rand_num) * (Pool_dist - 2)
-		local temp_y = math.sin(rand_num) * (Pool_dist - 2)
-		local temp_Rock = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Rock['x_coord'] = temp_x
-		temp_Rock['y_coord'] = temp_y
-		if not (Is_PlaceOcc(temp_x, temp_y)) then -- TO DO: for checking if any other object is already on that place
-			RockLocs[i] = temp_Rock;
-			-- GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-			if (GlobalObjLocs[temp_x] == nil) then
-				GlobalObjLocs[temp_x] = temp_y
-			else
-				GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-			end
-		else
-			i = i - 1;
-		end
+function drawRock(x,y)
+	local rockImage = gfx.image.new("images/rock_small")
+	local rockSprite = gfx.sprite.new(rockImage)
+	rockSprite:moveTo(x,y)
+	rockSprite:add()
+	
+	if rockWidth == 0 then
+		rockWidth = rockSprite.width
+		print(rockWidth)
 	end
-
-end
-
--- Function to generate number of rocks at a radial distance from root/split origin
-
-function BattGen()
-	for i = 0, NumBatteries, 1 do
-
-		local rand_num = math.random(180)
-		rand_num = rand_num * 0.0174533
-		local temp_x = math.cos(rand_num) * (Pool_dist - 2)
-		local temp_y = math.sin(rand_num) * (Pool_dist - 2)
-		local temp_Batt = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Batt['x_coord'] = temp_x
-		temp_Batt['y_coord'] = temp_y
-		if not (Is_PlaceOcc(temp_x, temp_y)) then -- TO DO: for checking if any other object is already on that place
-			BattLocs[i] = temp_Batt;
-			--GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-			if (GlobalObjLocs[temp_x] == nil) then
-				GlobalObjLocs[temp_x] = temp_y
-			else
-				GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-			end
-		else
-			i = i - 1;
-		end
-
+	if rockHeight == 0 then
+		rockHeight = rockSprite.height
+		print(rockHeight)
 	end
-end
-
--- TEST: Checks if there is an object already placed at a coordinate (priority given to water/pool objects!)
-function Is_PlaceOcc(x, y)
-	if (GlobalObjLocs[x] == nil) then
-		return false
-	else
-		for i = 1, #GlobalObjLocs[x] do
-			if (GlobalObjLocs[x][i] == y) then
-				return true
-			end
-		end
-	end
-	return false
-end
-
---[[ SHAHBAZ CODE BLOCK B ENDS--]]
-
-function drawPool()
-	--[[
-	for key, value in pairs(PoolLocs) do
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(value.x_coord,value.y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. value.x_coord .. ", "..value.y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. value.x_coord .. ", "..value.y_coord,  value.x_coord, value.y_coord - 10)
-
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
-	end
-	--]]
-
-
-	for i = 0, #PoolLocs, 1 do
-		print("hello")
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
-
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
-	end
-
 end
 
 function initialize()
-	PoolGen()
-	RockGen()
-	BattGen()
-	--print ("pre draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-
-	--drawPool()
-
-	--print ("post draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
+	PoolGen(200,80)
+	PoolGen(200,100)
+	RockGen(250,80)
+	RockGen(300,120)
 
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
@@ -337,7 +136,9 @@ function playdate.update()
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-		alternateBranch()
+		if(branchNumber > 0) then
+			alternateBranch()
+		end
 	end
 
 	--D-PAD button press
@@ -362,30 +163,41 @@ end
 
 
 -- x can be -1 (left), 0 (center) and 1 (right)
+-- FIX ME: CHECK ROCK COLLISSIONS HERE!
 function drawRoot(x, y)
-	gfx.setColor(gfx.kColorBlack)
-	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
-	print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
-	CheckPoolCollision((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
-	rootX += x
-	rootY += y
-	
+	--print(rootX, rootY)
+	if CheckRockCollision((200 - rootThickness/2) + (rootThickness*(rootX+x)), 48 - rootThickness/2 + (rootThickness*(rootY+y))) then
+		return
+	end
+
+	if(rootLength > 0) then
+		gfx.setColor(gfx.kColorBlack)
+		gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
+		--print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
+		CheckPoolCollision((200 - rootThickness/2) + (rootThickness*(rootX+x)), 48 - rootThickness/2 + (rootThickness*(rootY+y)))
+		rootX += x
+		rootY += y
+		rootLength -= 1
+	end
 	WaterTableCollision(48 - rootThickness/2 + (rootThickness*rootY))
 end
 
 function drawBranch()
-	drawX = (200 - branchSize/2) + (rootThickness*rootX)
-	drawY = (48 - branchSize/2) + (rootThickness*rootY)
+	if rootBranches > 0 then
+		drawX = (200 - branchSize/2) + (rootThickness*rootX)
+		drawY = (48 - branchSize/2) + (rootThickness*rootY)
 
-	gfx.drawRect(drawX,drawY,branchSize, branchSize)
+		gfx.drawRect(drawX,drawY,branchSize, branchSize)
 
-	branchLocs[branchNumber] = {}
-	branchLocs[branchNumber][drawX] = drawY
+		branchLocs[branchNumber] = {}
+		branchLocs[branchNumber][drawX] = drawY
 
-	branchLocsLocalScale[branchNumber] = {}
-	branchLocsLocalScale[branchNumber][rootX] = rootY
+		branchLocsLocalScale[branchNumber] = {}
+		branchLocsLocalScale[branchNumber][rootX] = rootY
 
-	branchNumber += 1;
+		branchNumber += 1;
+		rootBranches -= 1
+	end
 end
 
 local buttonPressCount = 0 -- Number of times B is pressed.
@@ -432,52 +244,55 @@ function drawUI()
 	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
-	--[Old method of display Branches]
-	--gfx.setColor(gfx.kColorClear)
-	--gfx.fillRect(10,40,110,20)
-	--gfx.setColor(color)
-	--gfx.drawText("Branches: " .. rootBranches, 10, 40)
-
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Branches: " .. rootBranches, 290, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 end
 
-function CheckPoolCollision(x, y)
-	--X low and high range
-	local lowX = 200 - poolWidth
-	local highX = 200 + poolWidth
-	
-	--Y low and high range
-	local lowY = 80 - poolHeight
-	local highY = 80 + poolHeight
+-- this f(x) will return a boolean value for whether the position collides with a rock location or not
+function CheckRockCollision(x, y)
+	--print(x,y)
+	for k, v in pairs(RockLocs) do
+		local rockX = v.x
+		local rockY = v.y
+		
+		local lowX = rockX - rockWidth/2
+		local highX = rockX + rockWidth/2
+		
+		--Y low and high range
+		local lowY = rockY - rockHeight/2
+		local highY = rockY + rockHeight/2
 
-	if (x > lowX and x < highX) and (y > lowY and y < highY) then
-		rootLength += 20
-		rootBranches += 1
+		if (x > lowX and x < highX) and (y > lowY and y < highY) then
+			--will be inside rock
+			print("colliding")
+			return true
+		end
 	end
-	
-	--X low and high range
-	local lowX = 120 - poolWidth
-	local highX = 120 + poolWidth
-	--Y low and high range
-	local lowY = 60 - poolHeight
-	local highY = 60 + poolHeight
-	if (x > lowX and x < highX) and (y > lowY and y < highY) then
-		rootLength += 20
-		rootBranches += 1
-	end
-	
-	--X low and high range
-	local lowX = 280 - poolWidth
-	local highX = 280 + poolWidth
-	--Y low and high range
-	local lowY = 40 - poolHeight
-	local highY = 40 + poolHeight
-	if (x > lowX and x < highX) and (y > lowY and y < highY) then
-		rootLength += 20
-		rootBranches += 1
+
+	return false
+end
+
+
+function CheckPoolCollision(x, y)
+	for k, v in pairs(PoolLocs) do
+		local poolX = v.x
+		local poolY = v.y
+
+		--X low and high range
+		local lowX = poolX - poolWidth/2
+		local highX = poolX + poolWidth/2
+		
+		--Y low and high range
+		local lowY = poolY - poolHeight/2
+		local highY = poolY + poolHeight/2
+
+		if (x > lowX and x < highX) and (y > lowY and y < highY) and not (v.isUsed) then
+			rootLength += 20
+			rootBranches += 1
+			v.isUsed = true
+		end
 	end
 end
 
@@ -496,4 +311,21 @@ function WaterTableCollision(y)
 
 		playdate.stop()
 	end
+end
+
+--not in use
+function ResetVariables()
+	rootLength = 24
+	rootBranches = 1
+	initialize()
+
+	rootX = 0
+	rootY = 0
+	branchLocs = {}
+	branchLocsLocalScale = {}
+
+	PoolLocs = {};
+	RockLocs = {};
+	BattLocs = {};
+	GlobalObjLocs = {};
 end
