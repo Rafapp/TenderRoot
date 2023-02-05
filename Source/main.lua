@@ -40,6 +40,10 @@ local moveSpeed = 1
 local rootThickness = 2 -- Even number pls
 local rootY = 0
 local rootX = 0
+local branchSize = 10 -- Even number pls
+local branchNumber = 0
+local branchLocs = {}
+local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
@@ -316,12 +320,12 @@ function playdate.update()
 
 	-- A button press
 	if playdate.buttonJustPressed(playdate.kButtonA) then
-
+		drawBranch()
 	end
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-
+		alternateBranch()
 	end
 
 	--D-PAD button press
@@ -338,7 +342,6 @@ function playdate.update()
 		drawRoot(-1,0)
 		rootBranches+=1
 	end
-	-- Snake control
 
 	drawUI()
 	--drawPool()
@@ -346,10 +349,60 @@ end
 
 
 -- x can be -1 (left), 0 (center) and 1 (right)
-function drawRoot(x,y)
-	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX),48 - rootThickness/2 + (rootThickness*rootY),rootThickness, rootThickness)
-	rootY += y
+function drawRoot(x, y)
+	gfx.setColor(gfx.kColorBlack)
+	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
 	rootX += x
+	rootY += y
+end
+
+function drawBranch()
+	drawX = (200 - branchSize/2) + (rootThickness*rootX)
+	drawY = (48 - branchSize/2) + (rootThickness*rootY)
+	
+	gfx.drawRect(drawX,drawY,branchSize, branchSize)
+
+	branchLocs[branchNumber] = {}
+	branchLocs[branchNumber][drawX] = drawY
+
+	branchLocsLocalScale[branchNumber] = {}
+	branchLocsLocalScale[branchNumber][rootX] = rootY
+
+	branchNumber += 1;
+end
+
+local buttonPressCount = 0 -- Number of times B is pressed.
+function alternateBranch()
+	-- Mod loop through branches
+	local branchSelected = buttonPressCount % branchNumber
+	buttonPressCount += 1
+
+	-- Get local X and Y coordinates of current branch
+	local tempX = 0
+	local tempY = 0
+	for k, v in pairs(branchLocsLocalScale) do
+		for x, y in pairs(v) do
+			if(k == branchSelected) then
+				tempX = x
+				tempY = y
+			end
+		end
+	end
+
+	-- Visually loop through branches
+	for k, v in pairs(branchLocs) do
+        for x, y in pairs(v) do
+			if(k == branchSelected) then
+				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+				rootX = tempX
+				rootY = tempY
+			else
+				gfx.setColor(gfx.kColorWhite)
+                gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+                gfx.setColor(gfx.kColorBlack)
+			end
+		end
+	end
 end
 
 function updateRootLength(num)
@@ -359,7 +412,7 @@ end
 function drawUI()
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
 	--[Old method of display Branches]
@@ -370,7 +423,7 @@ function drawUI()
 	
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Branches: " .. rootBranches, 280, 0)
+	gfx.drawText("Branches: " .. rootBranches, 290, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 end
 
