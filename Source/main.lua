@@ -70,17 +70,14 @@ function playdate.update()
 	end
 	if playdate.buttonIsPressed(playdate.kButtonDown) then
 		drawRoot(0,1)
+		rootLength+=1
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
 		drawRoot(-1,0)
 	end
 	-- Snake control
 
-
-	--UI elements
-  gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	gfx.drawText("Root Length: " .. rootLength, 10, 0)
-	gfx.setImageDrawMode(original_draw_mode)
+	drawUI()
 end
 
 
@@ -89,4 +86,16 @@ function drawRoot(x,y)
 	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX),48 - rootThickness/2 + (rootThickness*rootY),rootThickness, rootThickness)
 	rootY += y
 	rootX += x
+end
+
+function updateRootLength(num)
+	rootLength = num
+end
+
+function drawUI()
+	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	local uiText = gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.setImageDrawMode(original_draw_mode)
+	--local test = gfx.getTextSizeForMaxWidth(uiText)
+	--gfx.drawText(test, 380, 0)
 end
