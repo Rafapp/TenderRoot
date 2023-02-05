@@ -64,9 +64,14 @@ function PoolGen()
 	-- hardcoded pools
 	
 	local temp_Pool = {}
-	temp_Pool['x_coord'] = 200
-	temp_Pool['y_coord'] = 80
+	--temp_Pool['x_coord'] = 200
+	--temp_Pool['y_coord'] = 80
+	--temp_Pool ['isUsed'] = false
+
+	temp_Pool['x_coord'] = math.random(0, 200) + 120
+	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
+	
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
@@ -74,17 +79,19 @@ function PoolGen()
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
 
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
 	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[0] = temp_Pool
 	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
 	
 
-	temp_Pool['x_coord'] = 120
-	temp_Pool['y_coord'] = 60
+	--temp_Pool['x_coord'] = 120
+	--temp_Pool['y_coord'] = 60
+	--temp_Pool ['isUsed'] = false
+
+	temp_Pool['x_coord'] = math.random(0, 100) + 220
+	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
+	
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
@@ -92,17 +99,18 @@ function PoolGen()
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
 	
-	--temp_Pool['x_coord'] = math.random(0, 100) + 220
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
 	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[1] = temp_Pool
 	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
 	
 
-	temp_Pool['x_coord'] = 280
-	temp_Pool['y_coord'] = 40
+	--temp_Pool['x_coord'] = 280
+	--temp_Pool['y_coord'] = 40
+	--temp_Pool ['isUsed'] = false
+	temp_Pool['x_coord'] = math.random(0, 200) + 120
+	temp_Pool['y_coord'] = math.random(40, 60) + 80
 	temp_Pool ['isUsed'] = false
+	
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
@@ -117,9 +125,6 @@ function PoolGen()
 		poolHeight = poolSprite.height
 	end
 
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(40, 60) + 80
-	--temp_Pool ['isUsed'] = false
 	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[2] = temp_Pool
 	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
@@ -325,21 +330,22 @@ function playdate.update()
 	end
 
 	--D-PAD button press
-	if playdate.buttonIsPressed(playdate.kButtonUp) then
+	if playdate.buttonIsPressed(playdate.kButtonUp) and (rootY > 0) and (rootY <= 97) then
 		drawRoot(0,-1)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonRight) then
+	if playdate.buttonIsPressed(playdate.kButtonRight) and (rootX < 100) and (rootX >= -100) then
 		drawRoot(1,0)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonDown) then
+	if playdate.buttonIsPressed(playdate.kButtonDown) and (rootY >= 0) and (rootY < 97)  then
 		drawRoot(0,1)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonLeft) then
+	if playdate.buttonIsPressed(playdate.kButtonLeft) and (rootX <= 100) and (rootX > -100) then
 		drawRoot(-1,0)
 		rootBranches+=1
 	end
 	-- Snake control
-
+	--print ("rootX: " ..rootX)
+	--print ("rootY: " ..rootY)
 	drawUI()
 	--drawPool()
 end
