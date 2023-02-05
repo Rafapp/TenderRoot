@@ -388,29 +388,35 @@ end
 
 -- x can be -1 (left), 0 (center) and 1 (right)
 function drawRoot(x, y)
-	gfx.setColor(gfx.kColorBlack)
-	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
-	print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
-	CheckPoolCollision((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
-	rootX += x
-	rootY += y
-	
+	if(rootLength > 0) then
+		gfx.setColor(gfx.kColorBlack)
+		gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
+		print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
+		CheckPoolCollision((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
+		rootX += x
+		rootY += y
+		rootLength -= 1
+	end
+
 	WaterTableCollision(48 - rootThickness/2 + (rootThickness*rootY))
 end
 
 function drawBranch()
-	drawX = (200 - branchSize/2) + (rootThickness*rootX)
-	drawY = (48 - branchSize/2) + (rootThickness*rootY)
+	if rootBranches > 0 then
+		drawX = (200 - branchSize/2) + (rootThickness*rootX)
+		drawY = (48 - branchSize/2) + (rootThickness*rootY)
 
-	gfx.drawRect(drawX,drawY,branchSize, branchSize)
+		gfx.drawRect(drawX,drawY,branchSize, branchSize)
 
-	branchLocs[branchNumber] = {}
-	branchLocs[branchNumber][drawX] = drawY
+		branchLocs[branchNumber] = {}
+		branchLocs[branchNumber][drawX] = drawY
 
-	branchLocsLocalScale[branchNumber] = {}
-	branchLocsLocalScale[branchNumber][rootX] = rootY
+		branchLocsLocalScale[branchNumber] = {}
+		branchLocsLocalScale[branchNumber][rootX] = rootY
 
-	branchNumber += 1;
+		branchNumber += 1;
+		rootBranches -= 1
+	end
 end
 
 local buttonPressCount = 0 -- Number of times B is pressed.
