@@ -11,52 +11,96 @@ BattLocs = {}
 
 GlobalObjLocs = {}
 
--- Rock dimensions
+-- Rocks
 local rockWidth = 0
 local rockHeight = 0
+local hardcodeRocks = {
+	[1]={103,135},
+	[2]={311,134},
+	[3]={55,150},
+	[4]={135,150},
+	[5]={215,150},
+	[6]={247,150},
+	[7]={263,150},
+	[8]={86,166},
+	[9]={295,166},
+	[10]={23,198},
+	[11]={39,198},
+	[12]={71,198},
+	[13]={86,198},
+	[14]={119,198},
+	[15]={135,198},
+	[16]={151,198},
+	[17]={167,19},
+	[18]={215,198},
+	[19]={231,198},
+	[20]={279,198},
+	[21]={295,198},
+	[22]={343,198},
+	[23]={359,198},
+	[24]={375,198}
+  }
+  
+  
+  
+  
 
--- Pool dimensions
+-- Pools
 local poolWidth = 0
 local poolHeight = 0
+local hardcodePools = {
+	[1]={200,71},
+	[2]={119,87},
+	[3]={168,87},
+	[4]={232,87},
+	[5]={280,87},
+	[6]={104,119},
+	[7]={232,119},
+	[8]={280,119},
+	[9]={152,135},
+	[10]={328,135},
+	[11]={72,151},
+	[12]={312,151},
+	[13]={136,167},
+	[14]={168,167},
+	[15]={216,167},
+	[16]={264,167}
+  }  
 
--- Root drawing variables
-local moveSpeed = 1
+-- Root/branch drawing variables
 local rootThickness = 2 -- Even number pls
-local rootY = 0
 local rootX = 0
+local rootY = 0
+
 local branchSize = 10 -- Even number pls
 local branchNumber = 0
+local rootLength = 1000
+local rootBranches = 1
+
 local branchLocs = {}
 local branchLocsLocalScale = {}
 
+-- Drawing variables
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 1000
-local rootBranches = 1
+
 local waterTablePosY = 0
 
+-- Framerate vars
 local playTimer = nil
 local playTime = 30 * 1000 --30secs in milisec
+
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
--- Place rock at x, y
+-- POOL GEN: Place rock at x, y
 local poolCount = 0
 function PoolGen(x, y)
 	tempPool = {x = x, y = y, isUsed = false}
 	drawPool(tempPool.x, tempPool.y)
 	PoolLocs[poolCount] = tempPool
 	poolCount += 1
-end
-
--- ROCK GEN: Place rock at x, y
-local rockCount = 0
-function RockGen(x,y)
-	tempRock = {x = x, y = y}
-	drawRock(tempRock.x, tempRock.y)
-	RockLocs[rockCount] = tempRock
-	rockCount += 1
 end
 
 function drawPool(x,y)
@@ -73,6 +117,15 @@ function drawPool(x,y)
 	end
 end
 
+-- ROCK GEN: Place rock at x, y
+local rockCount = 0
+function RockGen(x,y)
+	tempRock = {x = x, y = y}
+	drawRock(tempRock.x, tempRock.y)
+	RockLocs[rockCount] = tempRock
+	rockCount += 1
+end
+
 function drawRock(x,y)
 	local rockImage = gfx.image.new("images/rock_small")
 	local rockSprite = gfx.sprite.new(rockImage)
@@ -81,91 +134,14 @@ function drawRock(x,y)
 	
 	if rockWidth == 0 then
 		rockWidth = rockSprite.width
-		print(rockWidth)
 	end
 	if rockHeight == 0 then
 		rockHeight = rockSprite.height
-		print(rockHeight)
 	end
 end
 
-function initialize()
-	PoolGen(200,80)
-	PoolGen(200,100)
-	RockGen(250,80)
-	RockGen(300,120)
-
-	local seedImage = gfx.image.new("images/seed")
-	local seedSprite = gfx.sprite.new(seedImage)
-	seedSprite:moveTo(200,32)
-	seedSprite:add()
-
-	local backgroundImage = gfx.image.new("images/background")
-	gfx.sprite.setBackgroundDrawingCallback(
-		function(x, y, width, height)
-			gfx.setClipRect(x, y, width, height)
-			backgroundImage:draw(0, 0)
-			gfx.clearClipRect()
-		end
-	)
-
-	local waterTableImg = gfx.image.new("images/water_table")
-	local waterTableSpr = gfx.sprite.new(waterTableImg)
-	waterTableSpr:moveTo(200,120)
-	waterTableSpr:add()
-	waterTablePosY = 220
-
-	gfx.sprite.update() --tells system to update every sprite on the draw list
-	resetTimer()
-end
-
-initialize()
-
---runs 30fps, can be somehow changed
-function playdate.update()
-	-- Sprite manipulation runs before sprite update
-	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
-
-
-	-- Any drawing runs after sprite update
-
-	-- A button press
-	if playdate.buttonJustPressed(playdate.kButtonA) then
-		drawBranch()
-	end
-
-	-- B button press
-	if playdate.buttonJustPressed(playdate.kButtonB) then
-		if(branchNumber > 0) then
-			alternateBranch()
-		end
-	end
-
-	--D-PAD button press
-	if playdate.buttonIsPressed(playdate.kButtonUp) and (rootY > 0) and (rootY <= 97) then
-		drawRoot(0,-1)
-	end
-	if playdate.buttonIsPressed(playdate.kButtonRight) and (rootX < 100) and (rootX >= -100) then
-		drawRoot(1,0)
-	end
-	if playdate.buttonIsPressed(playdate.kButtonDown) and (rootY >= 0) and (rootY < 97)  then
-		drawRoot(0,1)
-	end
-	if playdate.buttonIsPressed(playdate.kButtonLeft) and (rootX <= 100) and (rootX > -100) then
-		drawRoot(-1,0)
-	end
-	-- Snake control
-	--print ("rootX: " ..rootX)
-	--print ("rootY: " ..rootY)
-	drawUI()
-	--drawPool()
-end
-
-
--- x can be -1 (left), 0 (center) and 1 (right)
--- FIX ME: CHECK ROCK COLLISSIONS HERE!
+-- Root movement
 function drawRoot(x, y)
-	--print(rootX, rootY)
 	if CheckRockCollision((200 - rootThickness/2) + (rootThickness*(rootX+x)), 48 - rootThickness/2 + (rootThickness*(rootY+y))) then
 		return
 	end
@@ -173,7 +149,6 @@ function drawRoot(x, y)
 	if(rootLength > 0) then
 		gfx.setColor(gfx.kColorBlack)
 		gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
-		--print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
 		CheckPoolCollision((200 - rootThickness/2) + (rootThickness*(rootX+x)), 48 - rootThickness/2 + (rootThickness*(rootY+y)))
 		rootX += x
 		rootY += y
@@ -239,11 +214,13 @@ function updateRootLength(num)
 end
 
 function drawUI()
+	-- Draw root length
 	gfx.fillRect(10,0,140,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
+	-- Draw branch count
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Branches: " .. rootBranches, 290, 0)
@@ -252,25 +229,23 @@ end
 
 -- this f(x) will return a boolean value for whether the position collides with a rock location or not
 function CheckRockCollision(x, y)
-	--print(x,y)
 	for k, v in pairs(RockLocs) do
 		local rockX = v.x
 		local rockY = v.y
 		
+		-- X low and high range
 		local lowX = rockX - rockWidth/2
 		local highX = rockX + rockWidth/2
 		
-		--Y low and high range
+		-- Y low and high range
 		local lowY = rockY - rockHeight/2
 		local highY = rockY + rockHeight/2
 
+		-- Check if colliding with rock
 		if (x > lowX and x < highX) and (y > lowY and y < highY) then
-			--will be inside rock
-			print("colliding")
 			return true
 		end
 	end
-
 	return false
 end
 
@@ -280,14 +255,15 @@ function CheckPoolCollision(x, y)
 		local poolX = v.x
 		local poolY = v.y
 
-		--X low and high range
+		-- X low and high range
 		local lowX = poolX - poolWidth/2
 		local highX = poolX + poolWidth/2
 		
-		--Y low and high range
+		-- Y low and high range
 		local lowY = poolY - poolHeight/2
 		local highY = poolY + poolHeight/2
 
+		-- Check if colliding with pool
 		if (x > lowX and x < highX) and (y > lowY and y < highY) and not (v.isUsed) then
 			rootLength += 20
 			rootBranches += 1
@@ -298,34 +274,84 @@ end
 
 function WaterTableCollision(y)
 	if y >= waterTablePosY then
-		--print("win")
 		gfx.fillRect(0,115,400,30)
 		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 		gfx.drawTextAligned("Win!", 200, 120, kTextAlignment.center)
 		gfx.setImageDrawMode(original_draw_mode)
-
-		-- gfx.fillRect(0,150,400,30)
-		-- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-		-- gfx.drawTextAligned("Press A button to Restart", 200, 155, kTextAlignment.center)
-		-- gfx.setImageDrawMode(original_draw_mode)
-
 		playdate.stop()
 	end
 end
 
---not in use
-function ResetVariables()
-	rootLength = 24
-	rootBranches = 1
-	initialize()
+-- INIT
+function initialize()
+	for a, b in ipairs(hardcodeRocks) do
+		RockGen(b[1],b[2])
+	end
 
-	rootX = 0
-	rootY = 0
-	branchLocs = {}
-	branchLocsLocalScale = {}
+	for a, b in ipairs(hardcodePools) do
+		PoolGen(b[1],b[2])
+	end
 
-	PoolLocs = {};
-	RockLocs = {};
-	BattLocs = {};
-	GlobalObjLocs = {};
+	local seedImage = gfx.image.new("images/seed")
+	local seedSprite = gfx.sprite.new(seedImage)
+	seedSprite:moveTo(200,32)
+	seedSprite:add()
+
+	local backgroundImage = gfx.image.new("images/background")
+	gfx.sprite.setBackgroundDrawingCallback(
+		function(x, y, width, height)
+			gfx.setClipRect(x, y, width, height)
+			backgroundImage:draw(0, 0)
+			gfx.clearClipRect()
+		end
+	)
+
+	local waterTableImg = gfx.image.new("images/water_table")
+	local waterTableSpr = gfx.sprite.new(waterTableImg)
+	waterTableSpr:moveTo(200,120)
+	waterTableSpr:add()
+	waterTablePosY = 220
+
+	gfx.sprite.update() --tells system to update every sprite on the draw list
+	resetTimer()
 end
+
+initialize()
+
+-- UPDATE: Runs at 30 fps
+function playdate.update()
+	-- Sprite manipulation runs before sprite update
+	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
+
+
+	-- Any drawing runs after sprite update
+
+	-- A button press
+	if playdate.buttonJustPressed(playdate.kButtonA) then
+		drawBranch()
+	end
+
+	-- B button press
+	if playdate.buttonJustPressed(playdate.kButtonB) then
+		if(branchNumber > 0) then
+			alternateBranch()
+		end
+	end
+
+	--D-PAD button press
+	if playdate.buttonIsPressed(playdate.kButtonUp) and (rootY > 0) and (rootY <= 97) then
+		drawRoot(0,-1)
+	end
+	if playdate.buttonIsPressed(playdate.kButtonRight) and (rootX < 100) and (rootX >= -100) then
+		drawRoot(1,0)
+	end
+	if playdate.buttonIsPressed(playdate.kButtonDown) and (rootY >= 0) and (rootY < 97)  then
+		drawRoot(0,1)
+	end
+	if playdate.buttonIsPressed(playdate.kButtonLeft) and (rootX <= 100) and (rootX > -100) then
+		drawRoot(-1,0)
+	end
+	drawUI()
+end
+
+
