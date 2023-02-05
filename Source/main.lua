@@ -49,6 +49,7 @@ local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
 local rootLength = 10
 local rootBranches = 0
+local waterTablePosY = 0
 
 local playTimer = nil
 local playTime = 30 * 1000 --30secs in milisec
@@ -66,11 +67,16 @@ end
 -- Function to generate number of waters at a radial distance from root/split origin
 function PoolGen()
 	-- hardcoded pools
-	
+
 	local temp_Pool = {}
-	temp_Pool['x_coord'] = 200
-	temp_Pool['y_coord'] = 80
+	--temp_Pool['x_coord'] = 200
+	--temp_Pool['y_coord'] = 80
+	--temp_Pool ['isUsed'] = false
+
+	temp_Pool['x_coord'] = math.random(0, 200) + 120
+	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
@@ -78,42 +84,45 @@ function PoolGen()
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
 
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
 	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[0] = temp_Pool
 	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
-	
 
-	temp_Pool['x_coord'] = 120
-	temp_Pool['y_coord'] = 60
+
+	--temp_Pool['x_coord'] = 120
+	--temp_Pool['y_coord'] = 60
+	--temp_Pool ['isUsed'] = false
+
+	temp_Pool['x_coord'] = math.random(0, 100) + 220
+	temp_Pool['y_coord'] = math.random(0, 40) + 80
 	temp_Pool ['isUsed'] = false
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
-	
-	--temp_Pool['x_coord'] = math.random(0, 100) + 220
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
+
 	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[1] = temp_Pool
 	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
-	
 
-	temp_Pool['x_coord'] = 280
-	temp_Pool['y_coord'] = 40
+
+	--temp_Pool['x_coord'] = 280
+	--temp_Pool['y_coord'] = 40
+	--temp_Pool ['isUsed'] = false
+	temp_Pool['x_coord'] = math.random(0, 200) + 120
+	temp_Pool['y_coord'] = math.random(40, 60) + 80
 	temp_Pool ['isUsed'] = false
+
 
 	print("hello")
 	local poolImage = gfx.image.new("images/water_pocket")
 	local poolSprite = gfx.sprite.new(poolImage)
 	poolSprite:moveTo(temp_Pool.x_coord,temp_Pool.y_coord)
 	poolSprite:add()
-	
+
 	if poolWidth == 0 then
 		poolWidth = poolSprite.width
 	end
@@ -121,15 +130,12 @@ function PoolGen()
 		poolHeight = poolSprite.height
 	end
 
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(40, 60) + 80
-	--temp_Pool ['isUsed'] = false
 	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
 	PoolLocs[2] = temp_Pool
 	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
-	
-	
+
+
+
 	for i = 0, #PoolLocs, 1 do
 		print("hello")
 		local poolImage = gfx.image.new("images/water_pocket")
@@ -259,7 +265,7 @@ function drawPool()
 	end
 	--]]
 
-	
+
 	for i = 0, #PoolLocs, 1 do
 		print("hello")
 		local poolImage = gfx.image.new("images/water_pocket")
@@ -277,7 +283,7 @@ function drawPool()
 			poolHeight = poolSprite.height
 		end
 	end
-	
+
 end
 
 function initialize()
@@ -285,11 +291,11 @@ function initialize()
 	RockGen()
 	BattGen()
 	--print ("pre draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
+
 	--drawPool()
 
 	--print ("post draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-	
+
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
 	seedSprite:moveTo(200,32)
@@ -303,6 +309,12 @@ function initialize()
 			gfx.clearClipRect()
 		end
 	)
+
+	local waterTableImg = gfx.image.new("images/water_table")
+	local waterTableSpr = gfx.sprite.new(waterTableImg)
+	waterTableSpr:moveTo(200,120)
+	waterTableSpr:add()
+	waterTablePosY = 220
 
 	gfx.sprite.update() --tells system to update every sprite on the draw list
 	resetTimer()
@@ -329,20 +341,21 @@ function playdate.update()
 	end
 
 	--D-PAD button press
-	if playdate.buttonIsPressed(playdate.kButtonUp) then
+	if playdate.buttonIsPressed(playdate.kButtonUp) and (rootY > 0) and (rootY <= 97) then
 		drawRoot(0,-1)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonRight) then
+	if playdate.buttonIsPressed(playdate.kButtonRight) and (rootX < 100) and (rootX >= -100) then
 		drawRoot(1,0)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonDown) then
+	if playdate.buttonIsPressed(playdate.kButtonDown) and (rootY >= 0) and (rootY < 97)  then
 		drawRoot(0,1)
 	end
-	if playdate.buttonIsPressed(playdate.kButtonLeft) then
+	if playdate.buttonIsPressed(playdate.kButtonLeft) and (rootX <= 100) and (rootX > -100) then
 		drawRoot(-1,0)
-		rootBranches+=1
 	end
-
+	-- Snake control
+	--print ("rootX: " ..rootX)
+	--print ("rootY: " ..rootY)
 	drawUI()
 	--drawPool()
 end
@@ -352,14 +365,18 @@ end
 function drawRoot(x, y)
 	gfx.setColor(gfx.kColorBlack)
 	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
+	print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
+	CheckPoolCollision((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
 	rootX += x
 	rootY += y
+	
+	WaterTableCollision(48 - rootThickness/2 + (rootThickness*rootY))
 end
 
 function drawBranch()
 	drawX = (200 - branchSize/2) + (rootThickness*rootX)
 	drawY = (48 - branchSize/2) + (rootThickness*rootY)
-	
+
 	gfx.drawRect(drawX,drawY,branchSize, branchSize)
 
 	branchLocs[branchNumber] = {}
@@ -410,7 +427,7 @@ function updateRootLength(num)
 end
 
 function drawUI()
-	gfx.fillRect(10,0,130,20)
+	gfx.fillRect(10,0,140,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
@@ -420,7 +437,7 @@ function drawUI()
 	--gfx.fillRect(10,40,110,20)
 	--gfx.setColor(color)
 	--gfx.drawText("Branches: " .. rootBranches, 10, 40)
-	
+
 	gfx.fillRect(280,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Branches: " .. rootBranches, 290, 0)
@@ -428,21 +445,55 @@ function drawUI()
 end
 
 function CheckPoolCollision(x, y)
-	for i = 1, #PoolLocs, 1 do
-		local pool = PoolLocs[i]
-		--X low and high range
-		local lowX = pool.x_coord - poolWidth
-		local highX = pool.x_coord + poolWidth
-		--Y low and high range
-		local lowY = pool.y_coord - poolHeight
-		local highY = pool.y_coord + poolHeight
+	--X low and high range
+	local lowX = 200 - poolWidth
+	local highX = 200 + poolWidth
+	
+	--Y low and high range
+	local lowY = 80 - poolHeight
+	local highY = 80 + poolHeight
 
-		if (x+200 >= lowX and x+200 <= highX) and (y+48 >= lowY and y+48 <= highY) then
-			--toggle pool bool (if true then false, vice versa)
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+	
+	--X low and high range
+	local lowX = 120 - poolWidth
+	local highX = 120 + poolWidth
+	--Y low and high range
+	local lowY = 60 - poolHeight
+	local highY = 60 + poolHeight
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+	
+	--X low and high range
+	local lowX = 280 - poolWidth
+	local highX = 280 + poolWidth
+	--Y low and high range
+	local lowY = 40 - poolHeight
+	local highY = 40 + poolHeight
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+end
 
-			--update root length
-			rootLength += 20
-			rootBranches += 1
-		end
+function WaterTableCollision(y)
+	if y >= waterTablePosY then
+		--print("win")
+		gfx.fillRect(0,115,400,30)
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		gfx.drawTextAligned("Win!", 200, 120, kTextAlignment.center)
+		gfx.setImageDrawMode(original_draw_mode)
+
+		-- gfx.fillRect(0,150,400,30)
+		-- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		-- gfx.drawTextAligned("Press A button to Restart", 200, 155, kTextAlignment.center)
+		-- gfx.setImageDrawMode(original_draw_mode)
+
+		playdate.stop()
 	end
 end
