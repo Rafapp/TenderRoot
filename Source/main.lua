@@ -73,6 +73,8 @@ local branchSize = 10 -- Even number pls
 local branchNumber = 0
 local rootLength = 24
 local rootBranches = 1
+local rootLengthIncrement = 20
+local rootLengthMultiplier = 1.3
 
 local branchLocs = {}
 local branchLocsLocalScale = {}
@@ -82,6 +84,7 @@ local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
 
 local waterTablePosY = 0
+local isLose = false
 
 -- Framerate vars
 local playTimer = nil
@@ -166,6 +169,7 @@ function drawRoot(x, y)
 		rootLength -= 1
 	end
 	WaterTableCollision(48 - rootThickness/2 + (rootThickness*rootY))
+	CheckRookLength()
 end
 
 function drawBranch()
@@ -276,7 +280,8 @@ function CheckPoolCollision(x, y)
 
 		-- Check if colliding with pool
 		if (x > lowX and x < highX) and (y > lowY and y < highY) and not (v.isUsed) then
-			rootLength += 20
+			rootLength += rootLengthIncrement * rootLengthMultiplier
+			rootLength = math.ceil(rootLength)
 			rootBranches += 1
 			v.isUsed = true
 		end
@@ -366,4 +371,14 @@ function playdate.update()
 	drawUI()
 end
 
+function CheckRookLength()
+	if rootLength == 0 and not(isLose) then
+		print("lose")
+		isLose = true
+		RestartGame()
+	end
+end
 
+function RestartGame()
+	initialize()
+end
