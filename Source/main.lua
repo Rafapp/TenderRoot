@@ -7,9 +7,6 @@ local gfx <const> = playdate.graphics
 
 PoolLocs = {}
 RockLocs = {}
-BattLocs = {}
-
-GlobalObjLocs = {}
 
 -- Rocks
 local rockWidth = 0
@@ -94,6 +91,20 @@ local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
+-- RockMath
+function calculateRocks(count)
+	for i = 0, count, 1 do
+		randomAngle = math.random(-90, 90)
+		randomAngleRad = math.rad(randomAngle)
+		local xPos = math.floor((rootLength + 50) * math.sin(randomAngleRad))
+		local yPos = math.floor((rootLength + 50) * math.cos(randomAngleRad))
+		RockGen(xPos + 200, yPos + 48)
+	end
+end
+
+-- PoolMath
+function calculatePools()
+end
 -- POOL GEN: Place rock at x, y
 local poolCount = 0
 function PoolGen(x, y)
@@ -284,6 +295,7 @@ end
 
 -- INIT
 function initialize()
+	--calculateRocks(3)
 	for a, b in ipairs(hardcodeRocks) do
 		RockGen(b[1],b[2])
 	end
