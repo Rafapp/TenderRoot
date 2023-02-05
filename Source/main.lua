@@ -222,13 +222,20 @@ function updateRootLength(num)
 end
 
 function drawUI()
+	--gfx.setColor(gfx.kColorBlack);
+	--gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	
 	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	--gfx.setColor(gfx.kColorBlack);
+	gfx.setColor(gfx.kColorBlack)
 	gfx.drawText("Root Length: " .. rootLength, 10, 0)
 	gfx.setImageDrawMode(original_draw_mode)
 
-	gfx.setColor(gfx.kDrawModeFillWhite);
+	--gfx.setImageDrawMode(gfx.kDrawModeBlackTransparent);
+	gfx.setColor(gfx.kColorClear)
 	gfx.fillRect(10,40,110,20)
-	gfx.setColor(color);
+	--gfx.setColor(gfx.kColorBlack);
 	gfx.drawText("Branches: " .. rootBranches, 10, 40)
+	gfx.setColor(color)
 end
