@@ -235,38 +235,38 @@ function drawBranch()
 	branchNumber += 1;
 end
 
-local buttonPressCount = 0
+local buttonPressCount = 0 -- Number of times B is pressed.
 function alternateBranch()
-	local selectedBranch = buttonPressCount % branchNumber
-	local index = 0
-	local index2 = 0
-	
-	local tempRootX = 0
-	local tempRootY = 0
-	for a, b in pairs(branchLocsLocalScale) do
-		if(selectedBranch == index2) then
-			for x2, y2 in pairs(b) do
-				tempRootX = x2
-				tempRootY = y2
+	-- Mod loop through branches
+	local branchSelected = buttonPressCount % branchNumber
+	buttonPressCount += 1
+
+	-- Get local X and Y coordinates of current branch
+	local tempX = 0
+	local tempY = 0
+	for k, v in pairs(branchLocsLocalScale) do
+		for x, y in pairs(v) do
+			if(k == branchSelected) then
+				tempX = x
+				tempY = y
 			end
 		end
 	end
 
+	-- Visually loop through branches
 	for k, v in pairs(branchLocs) do
-		for x, y in pairs(v) do
-			if(selectedBranch == index) then
+        for x, y in pairs(v) do
+			if(k == branchSelected) then
 				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
-				rootX = tempRootX
-				rootY = tempRootY
-			else -- Fill back to white
+				rootX = tempX
+				rootY = tempY
+			else
 				gfx.setColor(gfx.kColorWhite)
-				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
-				gfx.setColor(gfx.kColorBlack)
+                gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+                gfx.setColor(gfx.kColorBlack)
 			end
-			index += 1
 		end
 	end
-	buttonPressCount += 1
 end
 
 function updateRootLength(num)
