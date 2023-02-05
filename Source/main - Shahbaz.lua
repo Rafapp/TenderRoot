@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
 
+
 --[[ SHAHBAZ CODE BLOCK A STARTS--]]
 -- The origin of the root; player start location
 ROOT_ORIGIN_X = 200;
@@ -33,34 +34,11 @@ GlobalObjLocs = {};
 --[[ SHAHBAZ CODE BLOCK A ENDS --]]
 
 
-local playTimer = nil
-local playTime = 30 * 1000 --30secs in milisec
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
 function initialize()
-	PoolGen()
-	RockGen()
-	BattGen()
-
-
-
-	local seedImage = gfx.image.new("images/seed")
-	local seedSprite = gfx.sprite.new(seedImage)
-	seedSprite:moveTo(200, 64)
-	seedSprite:add()
-
-	gfx.drawPixel(0, 0)
-
-	local backgroundImage = gfx.image.new("images/background")
-	gfx.sprite.setBackgroundDrawingCallback(
-		function(x, y, width, height)
-			gfx.setClipRect(x, y, width, height)
-			backgroundImage:draw(0, 0)
-			gfx.clearClipRect()
-		end
-	)
 
 	resetTimer()
 end
