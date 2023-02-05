@@ -136,7 +136,9 @@ function playdate.update()
 
 	-- B button press
 	if playdate.buttonJustPressed(playdate.kButtonB) then
-		alternateBranch()
+		if(branchNumber > 0) then
+			alternateBranch()
+		end
 	end
 
 	--D-PAD button press
