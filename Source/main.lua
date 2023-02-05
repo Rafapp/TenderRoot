@@ -49,6 +49,7 @@ local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
 local rootLength = 10
 local rootBranches = 0
+local waterTablePosY = 0
 
 local playTimer = nil
 local playTime = 30 * 1000 --30secs in milisec
@@ -309,6 +310,12 @@ function initialize()
 		end
 	)
 
+	local waterTableImg = gfx.image.new("images/water_table")
+	local waterTableSpr = gfx.sprite.new(waterTableImg)
+	waterTableSpr:moveTo(200,120)
+	waterTableSpr:add()
+	waterTablePosY = 220
+
 	gfx.sprite.update() --tells system to update every sprite on the draw list
 	resetTimer()
 end
@@ -345,7 +352,6 @@ function playdate.update()
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) and (rootX <= 100) and (rootX > -100) then
 		drawRoot(-1,0)
-		rootBranches+=1
 	end
 	-- Snake control
 	--print ("rootX: " ..rootX)
@@ -359,8 +365,12 @@ end
 function drawRoot(x, y)
 	gfx.setColor(gfx.kColorBlack)
 	gfx.fillRect((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY), rootThickness, rootThickness)
+	print((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
+	CheckPoolCollision((200 - rootThickness/2) + (rootThickness*rootX), 48 - rootThickness/2 + (rootThickness*rootY))
 	rootX += x
 	rootY += y
+	
+	WaterTableCollision(48 - rootThickness/2 + (rootThickness*rootY))
 end
 
 function drawBranch()
@@ -417,7 +427,7 @@ function updateRootLength(num)
 end
 
 function drawUI()
-	gfx.fillRect(10,0,130,20)
+	gfx.fillRect(10,0,140,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
 	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
@@ -435,21 +445,55 @@ function drawUI()
 end
 
 function CheckPoolCollision(x, y)
-	for i = 1, #PoolLocs, 1 do
-		local pool = PoolLocs[i]
-		--X low and high range
-		local lowX = pool.x_coord - poolWidth
-		local highX = pool.x_coord + poolWidth
-		--Y low and high range
-		local lowY = pool.y_coord - poolHeight
-		local highY = pool.y_coord + poolHeight
+	--X low and high range
+	local lowX = 200 - poolWidth
+	local highX = 200 + poolWidth
+	
+	--Y low and high range
+	local lowY = 80 - poolHeight
+	local highY = 80 + poolHeight
 
-		if (x+200 >= lowX and x+200 <= highX) and (y+48 >= lowY and y+48 <= highY) then
-			--toggle pool bool (if true then false, vice versa)
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+	
+	--X low and high range
+	local lowX = 120 - poolWidth
+	local highX = 120 + poolWidth
+	--Y low and high range
+	local lowY = 60 - poolHeight
+	local highY = 60 + poolHeight
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+	
+	--X low and high range
+	local lowX = 280 - poolWidth
+	local highX = 280 + poolWidth
+	--Y low and high range
+	local lowY = 40 - poolHeight
+	local highY = 40 + poolHeight
+	if (x > lowX and x < highX) and (y > lowY and y < highY) then
+		rootLength += 20
+		rootBranches += 1
+	end
+end
 
-			--update root length
-			rootLength += 20
-			rootBranches += 1
-		end
+function WaterTableCollision(y)
+	if y >= waterTablePosY then
+		--print("win")
+		gfx.fillRect(0,115,400,30)
+		gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		gfx.drawTextAligned("Win!", 200, 120, kTextAlignment.center)
+		gfx.setImageDrawMode(original_draw_mode)
+
+		-- gfx.fillRect(0,150,400,30)
+		-- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+		-- gfx.drawTextAligned("Press A button to Restart", 200, 155, kTextAlignment.center)
+		-- gfx.setImageDrawMode(original_draw_mode)
+
+		playdate.stop()
 	end
 end
