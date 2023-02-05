@@ -52,7 +52,7 @@ local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local color = gfx.getColor()
-local rootLength = 24
+local rootLength = 1000
 local rootBranches = 1
 local waterTablePosY = 0
 
@@ -64,140 +64,15 @@ end
 
 --[[ SHAHBAZ CODE BLOCK B STARTS--]]
 
--- PoolLocs contains the following pool object features at each index:
--- 																	  x_coord: x-coordinate for pool
--- 																	  y_coord: y-coordinate for pool
--- 																	  isUsed: the pool's drain status
-
 -- Function to generate number of waters at a radial distance from root/split origin
-function PoolGen()
-	-- hardcoded pools
+local poolCount = 0
+function PoolGen(x, y)
+	tempPool = {x = x, y = y, isUsed = false}
 
-	local temp_Pool = {}
-	--temp_Pool['x_coord'] = 200
-	--temp_Pool['y_coord'] = 80
-	--temp_Pool ['isUsed'] = false
-
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
-
-	Pool0['x_coord'] = math.random(0, 200) + 120
-	Pool0['y_coord'] = math.random(0, 40) + 80
-	Pool0 ['isUsed'] = false
-
-	print("hello")
-	local poolImage = gfx.image.new("images/water_pocket")
-	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(Pool0.x_coord,Pool0.y_coord)
-	poolSprite:add()
-
-	--print ("pool 0: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	--PoolLocs[0] = temp_Pool
-	PoolLocs[0] = Pool0
-	-- hardcode
-	--Pool0 = temp_Pool
-	print ("pool 0: ".. PoolLocs[0]['x_coord'] .. "," .. PoolLocs[0]['y_coord'])
-
-
-	--temp_Pool['x_coord'] = 120
-	--temp_Pool['y_coord'] = 60
-	--temp_Pool ['isUsed'] = false
-
-	--temp_Pool['x_coord'] = math.random(0, 100) + 220
-	--temp_Pool['y_coord'] = math.random(0, 40) + 80
-	--temp_Pool ['isUsed'] = false
-
-	Pool1['x_coord'] = math.random(0, 100) + 220
-	Pool1['y_coord'] = math.random(0, 40) + 80
-	Pool1 ['isUsed'] = false
+	drawPool(tempPool.x, tempPool.y)
 	
-
-	print("hello")
-	local poolImage = gfx.image.new("images/water_pocket")
-	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(Pool1.x_coord,Pool1.y_coord)
-	poolSprite:add()
-
-	--print ("pool 1: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	--PoolLocs[1] = temp_Pool
-	PoolLocs[1] = Pool1
-	-- hardcode
-	--Pool1 = temp_Pool
-	print ("pool 1: ".. PoolLocs[1]['x_coord'] .. "," .. PoolLocs[1]['y_coord'])
-
-
-	--temp_Pool['x_coord'] = 280
-	--temp_Pool['y_coord'] = 40
-	--temp_Pool ['isUsed'] = false
-	--temp_Pool['x_coord'] = math.random(0, 200) + 120
-	--temp_Pool['y_coord'] = math.random(40, 60) + 80
-	--temp_Pool ['isUsed'] = false
-
-	Pool2['x_coord'] = math.random(0, 200) + 120
-	Pool2['y_coord'] = math.random(40, 60) + 80
-	Pool2 ['isUsed'] = false
-
-
-	print("hello")
-	local poolImage = gfx.image.new("images/water_pocket")
-	local poolSprite = gfx.sprite.new(poolImage)
-	poolSprite:moveTo(Pool2.x_coord,Pool2.y_coord)
-	poolSprite:add()
-
-	if poolWidth == 0 then
-		poolWidth = poolSprite.width
-	end
-	if poolHeight == 0 then
-		poolHeight = poolSprite.height
-	end
-
-	--print ("pool 2: ".. temp_Pool['x_coord'] .. "," .. temp_Pool['y_coord'])
-	--PoolLocs[2] = temp_Pool
-	PoolLocs[2] = Pool2
-	-- hardcode
-	--Pool2 = temp_Pool
-	print ("pool 2: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-
-
-
-	for i = 0, #PoolLocs, 1 do
-		print("hello")
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
-
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
-	end
-
-
-	--[[ random pool generator
-	for i = 0, NumWaters, 1 do
-
-		local rand_num = math.random(180)
-		rand_num = rand_num * 0.0174533
-		local temp_x = math.cos(rand_num) * Pool_dist
-		local temp_y = math.sin(rand_num) * Pool_dist
-		local temp_Pool = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Pool['x_coord'] = temp_x + 200
-		temp_Pool['y_coord'] = temp_y + 48
-		if (GlobalObjLocs[temp_x] == nil) then
-			GlobalObjLocs[temp_x] = temp_y
-		else
-			GlobalObjLocs[temp_x] = table.insert(GlobalObjLocs[temp_x], temp_y) -- TEST: if everything is right, this should chain y coords at each x val
-		end
-		PoolLocs[i] = temp_Pool;
-	end
-	--]]
+	PoolLocs[poolCount] = tempPool
+	poolCount += 1
 end
 
 -- Function to generate number of rocks at a radial distance from root/split origin
@@ -270,56 +145,23 @@ end
 
 --[[ SHAHBAZ CODE BLOCK B ENDS--]]
 
-function drawPool()
-	--[[
-	for key, value in pairs(PoolLocs) do
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(value.x_coord,value.y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. value.x_coord .. ", "..value.y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. value.x_coord .. ", "..value.y_coord,  value.x_coord, value.y_coord - 10)
+function drawPool(x,y)
+	local poolImage = gfx.image.new("images/water_pocket")
+	local poolSprite = gfx.sprite.new(poolImage)
+	poolSprite:moveTo(x,y)
+	poolSprite:add()
 
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
+	if poolWidth == 0 then
+		poolWidth = poolSprite.width
 	end
-	--]]
-
-
-	for i = 0, #PoolLocs, 1 do
-		print("hello")
-		local poolImage = gfx.image.new("images/water_pocket")
-		local poolSprite = gfx.sprite.new(poolImage)
-		poolSprite:moveTo(PoolLocs[i].x_coord,PoolLocs[i].y_coord)
-		poolSprite:add()
-		print ("Pool Location: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord)
-		-- TESTING: to debug pool locations
-		gfx.drawText("Pool Length: " .. PoolLocs[i].x_coord .. ", "..PoolLocs[i].y_coord,  PoolLocs[i].x_coord, PoolLocs[i].y_coord - 10)
-
-		if poolWidth == 0 then
-			poolWidth = poolSprite.width
-		end
-		if poolHeight == 0 then
-			poolHeight = poolSprite.height
-		end
+	if poolHeight == 0 then
+		poolHeight = poolSprite.height
 	end
-
 end
 
 function initialize()
-	PoolGen()
-	RockGen()
-	BattGen()
-	--print ("pre draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
-
-	--drawPool()
-
-	--print ("post draw: ".. PoolLocs[2]['x_coord'] .. "," .. PoolLocs[2]['y_coord'])
+	PoolGen(200,80)
+	PoolGen(200,100)
 
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
@@ -476,57 +318,23 @@ function drawUI()
 end
 
 function CheckPoolCollision(x, y)
-	--X low and high range
-	--local lowX = 200 - poolWidth
-	--local highX = 200 + poolWidth
-	local lowX = Pool0.x_coord - poolWidth
-	local highX = Pool0.x_coord + poolWidth
-	
-	--Y low and high range
-	--local lowY = 80 - poolHeight
-	--local highY = 80 + poolHeight
-	local lowY = Pool0.y_coord - poolHeight
-	local highY = Pool0.y_coord + poolHeight
+	for k, v in pairs(PoolLocs) do
+		local poolX = v.x
+		local poolY = v.y
 
-	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool0['isUsed']) then
-		rootLength += 20
-		rootBranches += 1
-		Pool0['isUsed'] = true
-	end
-	
-	--X low and high range
-	--local lowX = 120 - poolWidth
-	--local highX = 120 + poolWidth
-	local lowX = Pool1.x_coord - poolWidth
-	local highX = Pool1.x_coord + poolWidth
-	--Y low and high range
-	--local lowY = 60 - poolHeight
-	--local highY = 60 + poolHeight
-	local lowY = Pool1.y_coord - poolHeight
-	local highY = Pool1.y_coord + poolHeight
-	
-	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool1['isUsed'])then
-		rootLength += 20
-		rootBranches += 1
-		Pool1['isUsed'] = true
-	end
-	
-	--X low and high range
-	--local lowX = 280 - poolWidth
-	--local highX = 280 + poolWidth
-	local lowX = Pool2.x_coord - poolWidth
-	local highX = Pool2.x_coord + poolWidth
-	
-	--Y low and high range
-	--local lowY = 40 - poolHeight
-	--local highY = 40 + poolHeight
-	local lowY = Pool2.y_coord - poolHeight
-	local highY = Pool2.y_coord + poolHeight
-	
-	if (x > lowX and x < highX) and (y > lowY and y < highY) and not (Pool2['isUsed']) then
-		rootLength += 20
-		rootBranches += 1
-		Pool2['isUsed'] = true
+		--X low and high range
+		local lowX = poolX - poolWidth
+		local highX = poolX + poolWidth
+		
+		--Y low and high range
+		local lowY = poolY - poolHeight
+		local highY = poolY + poolHeight
+
+		if (x > lowX and x < highX) and (y > lowY and y < highY) and not (v.isUsed) then
+			rootLength += 20
+			rootBranches += 1
+			v.isUsed = true
+		end
 	end
 end
 
