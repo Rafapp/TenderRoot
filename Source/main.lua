@@ -13,7 +13,7 @@ ROOT_ORIGIN_Y = 48;
 Player_Fuel = 10;
 
 -- The radial distance a water resource can be from player origin
-Pool_dist = 8;
+Pool_dist = 80;
 -- number of waters
 NumWaters = 3; -- a variable representing the number of pools of water to generate
 -- number of stones
@@ -32,8 +32,8 @@ GlobalObjLocs = {};
 
 --[[ SHAHBAZ CODE BLOCK A ENDS --]]
 
-
-local rootLength = 0 
+local poolWidth = 0
+local poolHeight = 0;
 
 -- Root drawing variables
 local moveSpeed = 1
@@ -46,8 +46,9 @@ local branchLocs = {}
 local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
+local color = gfx.getColor()
 local rootLength = 10
-
+local rootBranches = 0
 
 local playTimer = nil
 local playTime = 30 * 1000 --30secs in milisec
@@ -66,8 +67,8 @@ function PoolGen()
 		local temp_x = math.cos(rand_num) * Pool_dist
 		local temp_y = math.sin(rand_num) * Pool_dist
 		local temp_Pool = {} -- we could later on refactor this into a JSON object repping the water pool
-		temp_Pool['x_coord'] = temp_x
-		temp_Pool['y_coord'] = temp_y
+		temp_Pool['x_coord'] = temp_x + 200
+		temp_Pool['y_coord'] = temp_y + 48
 		if (GlobalObjLocs[temp_x] == nil) then
 			GlobalObjLocs[temp_x] = temp_y
 		else
@@ -75,7 +76,7 @@ function PoolGen()
 		end
 		PoolLocs[i] = temp_Pool;
 	end
-	
+
 end
 
 -- Function to generate number of rocks at a radial distance from root/split origin
@@ -141,19 +142,35 @@ function Is_PlaceOcc(x, y)
 			if (GlobalObjLocs[x][i] == y) then
 				return true
 			end
-		end	
+		end
 	end
 	return false
 end
 
 --[[ SHAHBAZ CODE BLOCK B ENDS--]]
 
+function drawPool()
+	for i = 0, #PoolLocs do
+		print("hello")
+		local poolImage = gfx.image.new("images/water_pocket")
+		local poolSprite = gfx.sprite.new(poolImage)
+		poolSprite:moveTo(PoolLocs[i]["x_coord"],PoolLocs[i]["y_coord"])
+		poolSprite:add()
 
+		if poolWidth == 0 then
+			poolWidth = poolSprite.width
+		end
+		if poolHeight == 0 then
+			poolHeight = poolSprite.height
+		end
+	end
+end
 
 function initialize()
 	PoolGen()
 	RockGen()
 	BattGen()
+	drawPool()
 
 	local seedImage = gfx.image.new("images/seed")
 	local seedSprite = gfx.sprite.new(seedImage)
@@ -179,8 +196,8 @@ initialize()
 function playdate.update()
 	-- Sprite manipulation runs before sprite update
 	playdate.timer.updateTimers() --always update all timers at the end of update loop, even if you dont use timer related variables
-	
-	
+
+
 	-- Any drawing runs after sprite update
 
 	-- A button press
@@ -202,10 +219,10 @@ function playdate.update()
 	end
 	if playdate.buttonIsPressed(playdate.kButtonDown) then
 		drawRoot(0,1)
-		rootLength+=1
 	end
 	if playdate.buttonIsPressed(playdate.kButtonLeft) then
 		drawRoot(-1,0)
+		rootBranches+=1
 	end
 
 	drawUI()
@@ -274,10 +291,39 @@ function updateRootLength(num)
 end
 
 function drawUI()
+	gfx.fillRect(10,0,130,20)
 	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-	local uiText = gfx.drawText("Root Length: " .. rootLength, 10, 0)
+	gfx.drawText("Root Length: " .. rootLength, 20, 0)
 	gfx.setImageDrawMode(original_draw_mode)
-	--local test = gfx.getTextSizeForMaxWidth(uiText)
-	--gfx.drawText(test, 380, 0)
+
+	--[Old method of display Branches]
+	--gfx.setColor(gfx.kColorClear)
+	--gfx.fillRect(10,40,110,20)
+	--gfx.setColor(color)
+	--gfx.drawText("Branches: " .. rootBranches, 10, 40)
+	
+	gfx.fillRect(280,0,130,20)
+	gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+	gfx.drawText("Branches: " .. rootBranches, 290, 0)
+	gfx.setImageDrawMode(original_draw_mode)
 end
 
+function CheckPoolCollision(x, y)
+	for i = 1, #PoolLocs, 1 do
+		local pool = PoolLocs[i]
+		--X low and high range
+		local lowX = pool.x_coord - poolWidth
+		local highX = pool.x_coord + poolWidth
+		--Y low and high range
+		local lowY = pool.y_coord - poolHeight
+		local highY = pool.y_coord + poolHeight
+
+		if (x+200 >= lowX and x+200 <= highX) and (y+48 >= lowY and y+48 <= highY) then
+			--toggle pool bool (if true then false, vice versa)
+
+			--update root length
+			rootLength += 20
+			rootBranches += 1
+		end
+	end
+end
