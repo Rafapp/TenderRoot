@@ -43,6 +43,7 @@ local rootX = 0
 local branchSize = 10 -- Even number pls
 local branchNumber = 0
 local branchLocs = {}
+local branchLocsLocalScale = {}
 
 local original_draw_mode = gfx.getImageDrawMode()
 local rootLength = 10
@@ -222,11 +223,15 @@ end
 function drawBranch()
 	drawX = (200 - branchSize/2) + (rootThickness*rootX)
 	drawY = (48 - branchSize/2) + (rootThickness*rootY)
-
+	
 	gfx.drawRect(drawX,drawY,branchSize, branchSize)
 
 	branchLocs[branchNumber] = {}
 	branchLocs[branchNumber][drawX] = drawY
+
+	branchLocsLocalScale[branchNumber] = {}
+	branchLocsLocalScale[branchNumber][rootX] = rootY
+
 	branchNumber += 1;
 end
 
@@ -234,21 +239,32 @@ local buttonPressCount = 0
 function alternateBranch()
 	local selectedBranch = buttonPressCount % branchNumber
 	local index = 0
+	local index2 = 0
+	
+	local tempRootX = 0
+	local tempRootY = 0
+	for a, b in pairs(branchLocsLocalScale) do
+		if(selectedBranch == index2) then
+			for x2, y2 in pairs(b) do
+				tempRootX = x2
+				tempRootY = y2
+			end
+		end
+	end
+
 	for k, v in pairs(branchLocs) do
-		for k2, v2 in pairs(v) do
+		for x, y in pairs(v) do
 			if(selectedBranch == index) then
-				gfx.fillRect(k2+1,v2+1,branchSize-2,branchSize-2)
-				rootX -= k2
-				rootY -= v2
-			else
+				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
+				rootX = tempRootX
+				rootY = tempRootY
+			else -- Fill back to white
 				gfx.setColor(gfx.kColorWhite)
-				gfx.fillRect(k2+1,v2+1,branchSize-2,branchSize-2)
+				gfx.fillRect(x+1,y+1,branchSize-2,branchSize-2)
 				gfx.setColor(gfx.kColorBlack)
 			end
-			gfx.setColor(gfx.kColorBlack)
 			index += 1
 		end
-		
 	end
 	buttonPressCount += 1
 end
