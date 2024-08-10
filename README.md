@@ -1,3 +1,2 @@
-# Rootcriminal
-Can you find the root criminal?
-Solve the case by looking at the different clues, and find the root criminal!
+# TenderRoot
+Global Game Jam 2023 entry. Puzzle game for the theme "Root" created using Lua, and the PlayDate SDK
